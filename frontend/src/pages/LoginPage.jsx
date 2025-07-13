@@ -252,9 +252,9 @@ const LoginPage = () => {
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
           }}
         >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
     </Box>
   );
 };

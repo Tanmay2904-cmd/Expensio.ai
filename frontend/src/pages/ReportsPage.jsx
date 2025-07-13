@@ -347,7 +347,7 @@ const ReportsPage = () => {
             )}
 
             {report && (
-              <Box>
+            <Box>
                 {/* Summary Cards */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                   <Grid item xs={12} sm={6} md={3}>
@@ -628,7 +628,7 @@ const ReportsPage = () => {
                     Top 5 Expenses
                   </Typography>
                   <Table>
-                    <TableHead>
+                  <TableHead>
                       <TableRow sx={{ 
                         background: theme.palette.mode === 'dark'
                           ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)'
@@ -638,9 +638,9 @@ const ReportsPage = () => {
                         <TableCell sx={{ fontWeight: 700, color: theme.palette.text.primary }}>Description</TableCell>
                         <TableCell sx={{ fontWeight: 700, color: theme.palette.text.primary }}>Category</TableCell>
                         <TableCell sx={{ fontWeight: 700, color: theme.palette.text.primary }} align="right">Amount</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
                       {report.topExpenses.map((expense, index) => (
                         <TableRow key={expense.id} sx={{ 
                           '&:nth-of-type(even)': {
@@ -679,12 +679,12 @@ const ReportsPage = () => {
                           }}>
                             {formatCurrency(expense.amount)}
                           </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </Paper>
-              </Box>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
             )}
           </Paper>
         </Grid>
