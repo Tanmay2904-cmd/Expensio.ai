@@ -6,6 +6,7 @@ import {
   Link,
   Navigate,
   useLocation,
+  useNavigate,
 } from 'react-router-dom';
 import {
   AppBar,
@@ -13,32 +14,19 @@ import {
   Typography,
   Button,
   Box,
-  Container,
   CssBaseline,
   IconButton,
   useMediaQuery,
   ThemeProvider,
   createTheme,
   Avatar,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Chip,
 } from '@mui/material';
 import {
-  Dashboard,
-  AccountBalance,
-  Category,
-  Group,
-  Login,
-  AppRegistration,
   Logout,
   DarkMode,
   LightMode,
-  Settings,
-  Assessment,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import DashboardPage from './pages/DashboardPage';
@@ -49,12 +37,10 @@ import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Sidebar from './components/Sidebar';
+import AiChatbot from './components/AiChatbot';
 
-const ColorModeContext = createContext({ toggleColorMode: () => {} });
-
-const LOGO_URL = '/logo.png';
-
-const drawerWidth = 240;
+const ColorModeContext = createContext({ toggleColorMode: () => { } });
+const drawerWidth = 220;
 
 const ProtectedRoute = ({ children, adminOnly }) => {
   const { token, role } = useAuth();
@@ -66,6 +52,7 @@ const ProtectedRoute = ({ children, adminOnly }) => {
 const AppContent = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [mode, setMode] = useState(prefersDarkMode ? 'dark' : 'light');
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   const colorMode = useMemo(
@@ -91,229 +78,266 @@ const AppContent = () => {
         contrastText: '#ffffff',
       },
       background: {
-        default: mode === 'dark' ? '#0f0f23' : '#f8fafc',
-        paper: mode === 'dark' ? '#1a1a2e' : '#ffffff',
+        default: mode === 'dark' ? '#080818' : '#f0f2ff',
+        paper: mode === 'dark' ? '#0d0d24' : '#ffffff',
       },
       text: {
         primary: mode === 'dark' ? '#f1f5f9' : '#1e293b',
         secondary: mode === 'dark' ? '#94a3b8' : '#64748b',
       },
-      success: {
-        main: '#10b981',
-        light: '#34d399',
-        dark: '#059669',
-      },
-      warning: {
-        main: '#f59e0b',
-        light: '#fbbf24',
-        dark: '#d97706',
-      },
-      error: {
-        main: '#ef4444',
-        light: '#f87171',
-        dark: '#dc2626',
-      },
+      success: { main: '#10b981' },
+      warning: { main: '#f59e0b' },
+      error: { main: '#ef4444' },
+      info: { main: '#06b6d4' },
     },
     typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-      h1: {
-        fontWeight: 700,
-        fontSize: '2.5rem',
-      },
-      h2: {
-        fontWeight: 600,
-        fontSize: '2rem',
-      },
-      h3: {
-        fontWeight: 600,
-        fontSize: '1.75rem',
-      },
-      h4: {
-        fontWeight: 600,
-        fontSize: '1.5rem',
-      },
-      h5: {
-        fontWeight: 600,
-        fontSize: '1.25rem',
-      },
-      h6: {
-        fontWeight: 600,
-        fontSize: '1.125rem',
-      },
-      button: {
-        fontWeight: 600,
-        textTransform: 'none',
-      },
+      fontFamily: '"Inter", "Space Grotesk", "Helvetica", "Arial", sans-serif',
+      h1: { fontWeight: 800, letterSpacing: '-0.02em' },
+      h2: { fontWeight: 800, letterSpacing: '-0.02em' },
+      h3: { fontWeight: 700, letterSpacing: '-0.01em' },
+      h4: { fontWeight: 700, letterSpacing: '-0.01em' },
+      h5: { fontWeight: 700 },
+      h6: { fontWeight: 600 },
+      button: { fontWeight: 600, textTransform: 'none', letterSpacing: '0.01em' },
+      body1: { lineHeight: 1.7 },
+      body2: { lineHeight: 1.6 },
     },
-    shape: {
-      borderRadius: 12,
-    },
+    shape: { borderRadius: 14 },
     components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            background: mode === 'dark'
+              ? 'linear-gradient(135deg, #080818 0%, #0d0d24 40%, #0f0f2e 100%)'
+              : 'linear-gradient(135deg, #f0f2ff 0%, #e8eaff 50%, #f5f0ff 100%)',
+            backgroundAttachment: 'fixed',
+          }
+        }
+      },
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 10,
             textTransform: 'none',
             fontWeight: 600,
             boxShadow: 'none',
+            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
             '&:hover': {
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              boxShadow: '0 8px 20px rgba(99,102,241,0.25)',
+              transform: 'translateY(-1px)',
             },
           },
           contained: {
-            background: mode === 'dark' 
-              ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-              : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
             '&:hover': {
-              background: mode === 'dark'
-                ? 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)'
-                : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+              background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
             },
           },
+          outlined: {
+            borderColor: 'rgba(99,102,241,0.4)',
+            '&:hover': {
+              borderColor: '#6366f1',
+              background: 'rgba(99,102,241,0.06)',
+            }
+          }
         },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
-            boxShadow: mode === 'dark' 
-              ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-              : '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+            transition: 'box-shadow 0.3s ease, transform 0.3s ease',
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 16,
-            boxShadow: mode === 'dark'
-              ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-              : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            borderRadius: 20,
+            backgroundImage: 'none',
           },
         },
       },
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 10,
+              transition: 'all 0.2s ease',
+              '&.Mui-focused': {
+                boxShadow: '0 0 0 3px rgba(99,102,241,0.15)',
+              }
+            }
+          }
+        }
+      },
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            fontWeight: 600,
+          }
+        }
+      }
     },
   }), [mode]);
 
   const { token, role, logout, user } = useAuth();
+  const navigate = useNavigate();
+  const isDark = mode === 'dark';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box sx={{ 
-          display: 'flex', 
-          minHeight: '100vh', 
-          background: mode === 'dark' 
-            ? 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)'
-            : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)',
-          backgroundAttachment: 'fixed'
-        }}>
-          {token && (
-            <Sidebar drawerWidth={drawerWidth} role={role} />
-          )}
-          <Box sx={{ flexGrow: 1, ml: token ? `${drawerWidth}px` : 0, minHeight: '100vh' }}>
-            <AppBar position="fixed" sx={{
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-              ml: token ? `${drawerWidth}px` : 0,
-              background: mode === 'dark'
-                ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(139, 92, 246, 0.95) 100%)'
-                : 'linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(139, 92, 246, 0.95) 100%)',
-              backdropFilter: 'blur(20px)',
-              borderBottom: mode === 'dark' 
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        {/* Background ambient orbs */}
+        <Box sx={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+          <Box className="bg-orb bg-orb-1" />
+          <Box className="bg-orb bg-orb-2" />
+          <Box className="bg-orb bg-orb-3" />
+        </Box>
+        <Box sx={{ display: 'flex', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
+          {token && <Sidebar drawerWidth={drawerWidth} role={role} mode={mode} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />}
+          <Box sx={{
+            flexGrow: 1,
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: 0,
+          }}>
+            {/* Top AppBar */}
+            <AppBar position="fixed" elevation={0} sx={{
+              zIndex: (t) => t.zIndex.drawer + 1,
+              width: { xs: '100%', md: token ? `calc(100% - ${drawerWidth}px)` : '100%' },
+              ml: { xs: 0, md: token ? `${drawerWidth}px` : 0 },
+              background: isDark ? 'rgba(8, 8, 24, 0.85)' : 'rgba(240, 242, 255, 0.85)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              borderBottom: isDark ? '1px solid rgba(99,102,241,0.15)' : '1px solid rgba(99,102,241,0.12)',
             }}>
-              <Toolbar sx={{ minHeight: 70, display: 'flex', alignItems: 'center', px: { xs: 2, sm: 3 } }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  background: 'rgba(255, 255, 255, 0.1)', 
-                  borderRadius: 12, 
-                  p: 1, 
-                  mr: 2,
-                  backdropFilter: 'blur(10px)'
-                }}>
-                  <img src={LOGO_URL} alt="App Logo" style={{ 
-                    height: 32, 
-                    borderRadius: 8, 
-                    background: '#fff', 
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)' 
-                  }} />
-                </Box>
-                <Typography variant="h5" sx={{ 
-                  flexGrow: 1, 
-                  fontWeight: 800, 
-                  letterSpacing: 1,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>
-                  Expensio
-                </Typography>
+              <Toolbar sx={{ minHeight: 64, px: { xs: 1.5, sm: 2 }, gap: 1.5 }}>
+                {/* Hamburger for mobile */}
                 {token && (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 2, 
-                    mr: 2,
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 12,
-                    p: 1,
-                    backdropFilter: 'blur(10px)'
+                  <IconButton
+                    onClick={() => setMobileOpen(true)}
+                    size="small"
+                    sx={{
+                      display: { md: 'none' },
+                      color: isDark ? '#a5b4fc' : '#6366f1',
+                      mr: 0.5,
+                    }}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                )}
+                {/* Brand / Page indicator */}
+                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Typography variant="h6" sx={{
+                    fontWeight: 800,
+                    fontSize: '1.15rem',
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    letterSpacing: '-0.01em',
                   }}>
-                    <Avatar sx={{ 
-                      width: 36, 
-                      height: 36, 
-                      fontSize: 16,
+                    Expensio
+                  </Typography>
+                  {token && role === 'ADMIN' && (
+                    <Chip
+                      label="Admin"
+                      size="small"
+                      sx={{
+                        background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15))',
+                        border: '1px solid rgba(99,102,241,0.3)',
+                        color: '#818cf8',
+                        fontWeight: 700,
+                        fontSize: '0.68rem',
+                      }}
+                    />
+                  )}
+                </Box>
+
+                {/* User info */}
+                {token && (
+                  <Box sx={{
+                    display: 'flex', alignItems: 'center', gap: 1,
+                    background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(99,102,241,0.06)',
+                    borderRadius: 3, px: 1.5, py: 0.75,
+                    border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(99,102,241,0.12)',
+                  }}>
+                    <Avatar sx={{
+                      width: 30, height: 30, fontSize: 13,
                       background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                      fontWeight: 600
+                      fontWeight: 700,
+                      boxShadow: '0 2px 8px rgba(99,102,241,0.4)',
                     }}>
-                      {(user || '').charAt(0).toUpperCase()}
+                      {(user || 'U').charAt(0).toUpperCase()}
                     </Avatar>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#ffffff' }}>
+                    <Typography variant="body2" sx={{
+                      fontWeight: 600, fontSize: '0.8rem',
+                      color: isDark ? '#e2e8f0' : '#4338ca',
+                      display: { xs: 'none', sm: 'block' }
+                    }}>
                       {user}
                     </Typography>
                   </Box>
                 )}
+
+                {/* Dark mode toggle */}
+                <IconButton
+                  onClick={colorMode.toggleColorMode}
+                  size="small"
+                  sx={{
+                    background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(99,102,241,0.08)',
+                    border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(99,102,241,0.15)',
+                    borderRadius: '10px',
+                    width: 38, height: 38,
+                    color: isDark ? '#818cf8' : '#6366f1',
+                    transition: 'all 0.25s ease',
+                    '&:hover': {
+                      background: isDark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.15)',
+                      transform: 'rotate(15deg)',
+                    }
+                  }}
+                >
+                  {mode === 'dark' ? <LightMode fontSize="small" /> : <DarkMode fontSize="small" />}
+                </IconButton>
+
+                {/* Logout */}
                 {token && (
-                  <Button 
-                    color="inherit" 
-                    startIcon={<Logout />} 
-                    onClick={logout} 
-                    sx={{ 
-                      fontWeight: 600, 
-                      mr: 2,
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: 8,
-                      px: 2,
+                  <Button
+                    onClick={handleLogout}
+                    startIcon={<Logout fontSize="small" />}
+                    size="small"
+                    sx={{
+                      background: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.07)',
+                      border: '1px solid rgba(239,68,68,0.2)',
+                      color: '#f87171',
+                      borderRadius: '10px',
+                      px: 1.5, py: 0.75,
+                      fontSize: '0.8rem',
                       '&:hover': {
-                        background: 'rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(239,68,68,0.15)',
+                        border: '1px solid rgba(239,68,68,0.35)',
+                        transform: 'translateY(-1px)',
                       }
                     }}
                   >
                     Logout
                   </Button>
                 )}
-                <IconButton 
-                  color="inherit" 
-                  onClick={colorMode.toggleColorMode}
-                  sx={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 8,
-                    '&:hover': {
-                      background: 'rgba(255, 255, 255, 0.2)',
-                    }
-                  }}
-                >
-                  {mode === 'dark' ? <LightMode /> : <DarkMode />}
-                </IconButton>
               </Toolbar>
             </AppBar>
+
+            {/* Page content */}
             <Toolbar />
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ flexGrow: 1, p: { xs: 1.5, md: 2 } }}>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -326,26 +350,21 @@ const AppContent = () => {
                 )}
               </Routes>
             </Box>
+
+            {/* Footer only on login */}
             {location.pathname === '/login' && (
-              <Box component="footer" sx={{ 
-                py: 3, 
-                textAlign: 'center', 
-                background: mode === 'dark' 
-                  ? 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(15, 15, 35, 0.8) 100%)'
-                  : 'linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(226, 232, 240, 0.8) 100%)',
-                backdropFilter: 'blur(20px)',
-                borderTop: mode === 'dark' 
-                  ? '1px solid rgba(255, 255, 255, 0.1)'
-                  : '1px solid rgba(0, 0, 0, 0.1)',
-                mt: 4 
+              <Box component="footer" sx={{
+                py: 2.5, textAlign: 'center',
+                borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(99,102,241,0.1)',
               }}>
-                <Typography variant="body2" color="text.secondary">
-                  © {new Date().getFullYear()} Expensio · TN
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  © {new Date().getFullYear()} Expensio 
                 </Typography>
               </Box>
             )}
           </Box>
         </Box>
+        <AiChatbot />
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Box, Button, TextField, Typography, Paper, Grid, CircularProgress, Alert, Snackbar, useTheme } from '@mui/material';
+import { Box, Button, TextField, Typography, CircularProgress, Alert, Snackbar, useTheme, InputAdornment, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Login } from '@mui/icons-material';
-
-const LOGO_URL = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const LoginPage = () => {
   const { login } = useAuth();
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -29,234 +34,240 @@ const LoginPage = () => {
     setError('');
     setFieldErrors({});
     const errs = validate();
-    if (Object.keys(errs).length) {
-      setFieldErrors(errs);
-      return;
-    }
+    if (Object.keys(errs).length) { setFieldErrors(errs); return; }
     setLoading(true);
     try {
       await login(username, password);
-      setSnackbar({ open: true, message: 'Login successful!', severity: 'success' });
-      setTimeout(() => navigate('/'), 1000);
+      setSnackbar({ open: true, message: 'Welcome back! 🎉', severity: 'success' });
+      setTimeout(() => navigate('/'), 800);
     } catch (err) {
-      setError(err?.response?.data?.message || 'Login failed. Please check your credentials or try again later.');
-      setSnackbar({ open: true, message: 'Login failed.', severity: 'error' });
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
+  const fieldSx = {
+    mb: 2.5,
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(99,102,241,0.03)',
+      transition: 'all 0.2s ease',
+      '& fieldset': { borderColor: isDark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.15)' },
+      '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.4)' },
+      '&.Mui-focused': {
+        boxShadow: '0 0 0 3px rgba(99,102,241,0.12)',
+        background: isDark ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
+        '& fieldset': { borderColor: '#6366f1' },
+      }
+    },
+    '& .MuiInputLabel-root.Mui-focused': { color: '#6366f1' },
+    '& .MuiInputBase-input': { fontSize: '0.95rem' },
+  };
+
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      width: '100vw', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      px: 2,
-      background: theme.palette.mode === 'dark'
-        ? 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)'
-        : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)',
-      backgroundAttachment: 'fixed'
+    <Box sx={{
+      minHeight: '100vh',
+      width: '100%',
+      display: 'flex',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
-      <Paper elevation={0} sx={{ 
-        p: { xs: 4, md: 6 }, 
-        borderRadius: 4, 
-        maxWidth: 420,
-        width: '100%',
-        m: 'auto',
-        background: theme.palette.mode === 'dark'
-          ? 'linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 15, 35, 0.9) 100%)'
-          : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)',
-        backdropFilter: 'blur(20px)',
-        border: theme.palette.mode === 'dark'
-          ? '1px solid rgba(255, 255, 255, 0.1)'
-          : '1px solid rgba(0, 0, 0, 0.1)',
-        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15)',
-        transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: '0 35px 70px rgba(0, 0, 0, 0.2)',
-        }
+      {/* Left decorative panel (hidden on mobile) */}
+      <Box sx={{
+        display: { xs: 'none', md: 'flex' },
+        width: '45%',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 40%, #8b5cf6 70%, #06b6d4 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        p: 6,
       }}>
-            {/* Logo and Title */}
-            <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <Box sx={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                background: theme.palette.mode === 'dark'
-                  ? 'rgba(255, 255, 255, 0.1)'
-                  : 'rgba(99, 102, 241, 0.1)',
-                borderRadius: 16,
-                p: 2,
-                mb: 2,
-                backdropFilter: 'blur(10px)'
+        {/* decorative circles */}
+        <Box sx={{ position: 'absolute', width: 350, height: 350, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', top: -100, left: -100 }} />
+        <Box sx={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -50, right: -80 }} />
+        <Box sx={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '40%', right: -30 }} />
+
+        <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white' }}>
+          {/* Logo image */}
+          <Box sx={{
+            width: 100, height: 100, mx: 'auto', mb: 3,
+            borderRadius: '24px',
+            background: 'rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(12px)',
+            border: '1.5px solid rgba(255,255,255,0.25)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden',
+            p: 1.5,
+          }}>
+            <Box component="img" src="/logo.png" alt="Expensio Logo" sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1.5 }}>
+            <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+              Expensio
+            </Typography>
+            <Box sx={{
+              background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.35)',
+              borderRadius: '8px', px: 1, py: 0.25, backdropFilter: 'blur(8px)',
+            }}>
+              <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.06em', color: 'white' }}>AI</Typography>
+            </Box>
+          </Box>
+          <Typography variant="body1" sx={{ opacity: 0.8, lineHeight: 1.7, maxWidth: 280, mx: 'auto' }}>
+            Smart expense tracking powered by artificial intelligence.
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Right: Login Form */}
+      <Box sx={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: { xs: 2, md: 5 },
+        background: isDark ? 'rgba(8,8,24,0.97)' : 'rgba(240,242,255,0.97)',
+      }}>
+        <Box sx={{ width: '100%', maxWidth: 400 }}>
+          {/* Mobile logo */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1.5, mb: 4 }}>
+            <Box sx={{
+              width: 40, height: 40, borderRadius: '10px',
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden', p: 0.5,
+              boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
+            }}>
+              <Box component="img" src="/logo.png" alt="Logo" sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Typography variant="h5" sx={{
+                fontWeight: 800,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               }}>
-                <img src={LOGO_URL} alt="Logo" style={{ 
-                  height: 48, 
-                  borderRadius: 12, 
-                  background: '#fff', 
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
-                }} />
+                Expensio
+              </Typography>
+              <Box sx={{
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                borderRadius: '5px', px: 0.6, py: 0.1,
+              }}>
+                <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: 'white', letterSpacing: '0.04em' }}>AI</Typography>
               </Box>
-              <Typography variant="h4" sx={{ 
-                fontWeight: 800, 
-                mb: 1,
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: 1
-              }}>
-                Welcome Back
-              </Typography>
-              <Typography variant="body1" sx={{ 
-                color: 'text.secondary',
-                fontWeight: 500
-              }}>
-                Sign in to your Expensio account
-              </Typography>
             </Box>
+          </Box>
 
-            {error && (
-              <Alert severity="error" sx={{ 
-                mb: 3, 
-                borderRadius: 2,
-                background: theme.palette.mode === 'dark'
-                  ? 'rgba(239, 68, 68, 0.1)'
-                  : 'rgba(239, 68, 68, 0.05)',
-                border: theme.palette.mode === 'dark'
-                  ? '1px solid rgba(239, 68, 68, 0.3)'
-                  : '1px solid rgba(239, 68, 68, 0.2)'
-              }}>
-                {error}
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="Username"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                fullWidth
-                required
-                sx={{ 
-                  mb: 3,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    background: theme.palette.mode === 'dark'
-                      ? 'rgba(255, 255, 255, 0.05)'
-                      : 'rgba(0, 0, 0, 0.02)',
-                    '&:hover': {
-                      background: theme.palette.mode === 'dark'
-                        ? 'rgba(255, 255, 255, 0.08)'
-                        : 'rgba(0, 0, 0, 0.04)',
-                    },
-                    '&.Mui-focused': {
-                      background: theme.palette.mode === 'dark'
-                        ? 'rgba(255, 255, 255, 0.1)'
-                        : 'rgba(99, 102, 241, 0.05)',
-                    }
-                  }
-                }}
-                autoComplete="username"
-                error={!!fieldErrors.username}
-                helperText={fieldErrors.username}
-              />
-              <TextField
-                label="Password"
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                fullWidth
-                required
-                sx={{ 
-                  mb: 4,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    background: theme.palette.mode === 'dark'
-                      ? 'rgba(255, 255, 255, 0.05)'
-                      : 'rgba(0, 0, 0, 0.02)',
-                    '&:hover': {
-                      background: theme.palette.mode === 'dark'
-                        ? 'rgba(255, 255, 255, 0.08)'
-                        : 'rgba(0, 0, 0, 0.04)',
-                    },
-                    '&.Mui-focused': {
-                      background: theme.palette.mode === 'dark'
-                        ? 'rgba(255, 255, 255, 0.1)'
-                        : 'rgba(99, 102, 241, 0.05)',
-                    }
-                  }
-                }}
-                autoComplete="current-password"
-                error={!!fieldErrors.password}
-                helperText={fieldErrors.password}
-              />
-              <Button 
-                type="submit" 
-                variant="contained" 
-                size="large" 
-                fullWidth 
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Login />}
-                sx={{ 
-                  fontWeight: 700, 
-                  py: 1.5,
-                  borderRadius: 2,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(99, 102, 241, 0.3)',
-                  },
-                  transition: 'all 0.3s ease-in-out',
-                }} 
-                disabled={loading}
-              >
-                {loading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
-
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Don't have an account?{' '}
-                <Button 
-                  variant="text" 
-                  onClick={() => navigate('/register')}
-                  sx={{ 
-                    fontWeight: 600,
-                    color: '#6366f1',
-                    '&:hover': {
-                      background: 'rgba(99, 102, 241, 0.1)',
-                    }
-                  }}
-                >
-                  Sign up
-                </Button>
-              </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.75, letterSpacing: '-0.02em' }}>
+            Sign in
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
+            Don't have an account?{' '}
+            <Box component="span"
+              onClick={() => navigate('/register')}
+              sx={{ color: '#6366f1', fontWeight: 600, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+            >
+              Create one free
             </Box>
-          </Paper>
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={3000} 
+          </Typography>
+
+          {error && (
+            <Alert severity="error" sx={{
+              mb: 3, borderRadius: '12px',
+              background: isDark ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.05)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              '& .MuiAlert-icon': { color: '#f87171' },
+            }}>
+              {error}
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              fullWidth
+              sx={fieldSx}
+              autoComplete="username"
+              error={!!fieldErrors.username}
+              helperText={fieldErrors.username}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonOutlineIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <TextField
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              fullWidth
+              sx={fieldSx}
+              autoComplete="current-password"
+              error={!!fieldErrors.password}
+              helperText={fieldErrors.password}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlinedIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end">
+                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              disabled={loading}
+              endIcon={loading ? <CircularProgress size={18} color="inherit" /> : <ArrowForwardIcon />}
+              sx={{
+                mt: 0.5, py: 1.6,
+                borderRadius: '12px',
+                fontSize: '0.95rem',
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                boxShadow: '0 4px 20px rgba(99,102,241,0.35)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                  boxShadow: '0 8px 30px rgba(99,102,241,0.5)',
+                  transform: 'translateY(-2px)',
+                },
+                transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+              }}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </form>
+        </Box>
+      </Box>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={() => setSnackbar({ ...snackbar, open: false })} 
-          severity={snackbar.severity} 
-          sx={{ 
-            width: '100%',
-            borderRadius: 2,
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
-          }}
-        >
-                {snackbar.message}
-              </Alert>
-            </Snackbar>
+        <Alert severity={snackbar.severity} sx={{ borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

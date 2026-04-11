@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, Grid, TextField, Button, Switch, FormControlLabel, Divider, CircularProgress, Alert } from '@mui/material';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosConfig';
 
 const SettingsPage = () => {
   const [name, setName] = useState('');
@@ -17,7 +17,7 @@ const SettingsPage = () => {
       setProfileLoading(true);
       setError('');
       try {
-        const res = await axios.get('/api/users/me');
+        const res = await axiosInstance.get('/api/users/me');
         setName(res.data.name || '');
         // Optionally set themeDark from preferences if available
       } catch (err) {
@@ -35,7 +35,7 @@ const SettingsPage = () => {
     setSuccess('');
     try {
       // Connects to Spring Boot API: /api/users/me (PUT)
-      await axios.put('/api/users/me', { name });
+      await axiosInstance.put('/api/users/me', { name });
       setSuccess('Profile updated successfully.');
     } catch (err) {
       setError('Failed to update profile.');
@@ -50,7 +50,7 @@ const SettingsPage = () => {
     setSuccess('');
     try {
       // Connects to Spring Boot API: /api/users/me/password (POST)
-      await axios.post('/api/users/me/password', { password });
+      await axiosInstance.post('/api/users/me/password', { password });
       setSuccess('Password changed successfully.');
       setPassword('');
     } catch (err) {

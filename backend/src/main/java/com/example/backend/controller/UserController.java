@@ -1,78 +1,138 @@
 package com.example.backend.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
+import com.example.backend.dto.ApiResponse;
 import com.example.backend.entity.User;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.security.AuthorizationUtil;
+import com.example.backend.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.http.ResponseEntity;
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"}, allowCredentials = "true")
 public class UserController {
-    private final UserRepository userRepository;
-
+    
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private UserService userService;
 
+    /**
+     * Get all users - Admin only
+     */
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(ApiResponse.success(users));
     }
 
+    /**
+     * Create a new user - Admin only
+     */
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) {
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("USER");
         }
-        return userRepository.save(user);
+        User savedUser = userService.registerUser(new com.example.backend.dto.RegisterDTO(
+                user.getName(), user.getPassword(), user.getRole()
+        ));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("User created successfully", savedUser));
     }
 
+    /**
+     * Get user by ID - Admin only
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<User>> getUser(@PathVariable String id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(ApiResponse.success(user));
+    }
+
+    /**
+     * Update user - Admin can update anyone, user can update themselves
+     */
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User user = userRepository.findById(id).orElseThrow();
-        user.setName(userDetails.getName());
-        user.setRole(userDetails.getRole());
-        return userRepository.save(user);
+    public ResponseEntity<ApiResponse<User>> updateUser(
+            @PathVariable String id,
+            @Valid @RequestBody User userDetails,
+            @AuthenticationPrincipal UserDetails userDetails1) {
+        
+        User currentUser = userService.getUserByName(userDetails1.getUsername());
+        
+        // Check authorization
+        if (!currentUser.getRole().equals("ADMIN") && !currentUser.getId().equals(id)) {
+            throw new SecurityException("You can only update your own profile");
+        }
+        
+        User updatedUser = userService.updateUser(id, userDetails);
+        return ResponseEntity.ok(ApiResponse.success("User updated successfully", updatedUser));
     }
 
+    /**
+     * Delete user - Admin only
+     */
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully"));
     }
 
-    // Get current user's profile
-    @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        // TODO: Replace with real user lookup
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", userDetails.getUsername());
-        user.put("role", "USER");
-        return ResponseEntity.ok(user);
+    /**
+     * Get current user's profile
+     */
+    @GetMapping("/me/profile")
+    public ResponseEntity<ApiResponse<User>> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserByName(userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
-    // Update current user's profile
-    @PutMapping("/me")
-    public ResponseEntity<Map<String, Object>> updateCurrentUser(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Map<String, Object> updates) {
-        // TODO: Update user in DB
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", updates.getOrDefault("name", userDetails.getUsername()));
-        user.put("role", "USER");
-        return ResponseEntity.ok(user);
+    /**
+     * Update current user's profile
+     */
+    @PutMapping("/me/profile")
+    public ResponseEntity<ApiResponse<User>> updateCurrentUserProfile(
+            @Valid @RequestBody User userDetails,
+            @AuthenticationPrincipal UserDetails currentUserDetails) {
+        
+        User currentUser = userService.getUserByName(currentUserDetails.getUsername());
+        currentUser.setName(userDetails.getName());
+        User updated = userService.updateUser(currentUser.getId(), currentUser);
+        return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", updated));
     }
 
-    // Change password
+    /**
+     * Change password for current user
+     */
     @PostMapping("/me/password")
-    public ResponseEntity<Map<String, String>> changePassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Map<String, String> body) {
-        // TODO: Implement real password change logic
-        String newPassword = body.get("password");
-        // ...
-        return ResponseEntity.ok(Map.of("status", "Password changed (dummy response)"));
+    public ResponseEntity<ApiResponse<String>> changePassword(
+            @RequestBody Map<String, String> body,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        String oldPassword = body.get("oldPassword");
+        String newPassword = body.get("newPassword");
+        
+        if (oldPassword == null || oldPassword.isEmpty() || newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Old password and new password are required"));
+        }
+        
+        User user = userService.getUserByName(userDetails.getUsername());
+        userService.changePassword(user.getId(), oldPassword, newPassword);
+        
+        return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
     }
 }

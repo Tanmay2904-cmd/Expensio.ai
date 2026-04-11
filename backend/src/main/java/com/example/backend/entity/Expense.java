@@ -1,47 +1,81 @@
 package com.example.backend.entity;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
-
-@Entity
 public class Expense {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
     private Double amount;
     private String description;
-    private LocalDate date;
+    private String date;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private String categoryId;
+    private String categoryName;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private String userId;
+    private String userName;
 
-    // Constructors
-    public Expense() {}
-    public Expense(Double amount, String description, LocalDate date, Category category, User user) {
-        this.amount = amount;
-        this.description = description;
-        this.date = date;
-        this.category = category;
-        this.user = user;
+    public Expense() {
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }

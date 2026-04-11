@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosConfig';
 import { Box, Typography, Paper } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,8 +20,8 @@ const Dashboard = () => {
         monthlyUrl = '/api/expenses/my/monthly-summary';
       }
       const [catRes, monRes] = await Promise.all([
-        axios.get(categoryUrl),
-        axios.get(monthlyUrl),
+        axiosInstance.get(categoryUrl),
+        axiosInstance.get(monthlyUrl),
       ]);
       const categoryData = Object.entries(catRes.data).map(([name, value]) => ({ name, value }));
       setCategoryData(categoryData);

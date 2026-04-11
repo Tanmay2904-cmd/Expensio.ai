@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosConfig';
 
 const AuthContext = createContext();
 
@@ -9,18 +9,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => localStorage.getItem('user'));
 
   const login = async (username, password) => {
-    const res = await axios.post('/api/auth/login', { username, password });
-    setToken(res.data.token);
-    setRole(res.data.role);
+    const res = await axiosInstance.post('/api/auth/login', { username, password });
+    const { token, role, userId } = res.data; // Data is already unwrapped by interceptor
+    setToken(token);
+    setRole(role);
     setUser(username);
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('role', res.data.role);
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
     localStorage.setItem('user', username);
+    localStorage.setItem('userId', userId);
   };
 
   const register = async (username, password, role = 'USER') => {
     try {
-      await axios.post('/api/auth/register', { name: username, password, role });
+      await axiosInstance.post('/api/auth/register', { name: username, password, role });
       // Optionally auto-login after register
       await login(username, password);
     } catch (err) {

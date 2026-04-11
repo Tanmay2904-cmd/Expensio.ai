@@ -1,37 +1,76 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ApiResponse;
+import com.example.backend.dto.CategoryDTO;
 import com.example.backend.entity.Category;
-import com.example.backend.repository.CategoryRepository;
+import com.example.backend.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"}, allowCredentials = "true")
 public class CategoryController {
+    
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
+    /**
+     * Get all categories - Accessible to all authenticated users
+     */
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<Category>>> getAllCategories() {
+        List<Category> categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(ApiResponse.success(categories));
     }
 
+    /**
+     * Create a new category - Admin only
+     */
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return categoryRepository.save(category);
+@PreAuthorize("isAuthenticated()")
+public ResponseEntity<ApiResponse<Category>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+    Category category = categoryService.createCategory(categoryDTO);
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.success("Category created successfully", category));
+}
+
+    /**
+     * Get category by ID - Accessible to all authenticated users
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Category>> getCategory(@PathVariable String id) {
+        Category category = categoryService.getCategoryById(id);
+        return ResponseEntity.ok(ApiResponse.success(category));
     }
 
+    /**
+     * Update category - Admin only
+     */
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
-        Category category = categoryRepository.findById(id).orElseThrow();
-        category.setName(categoryDetails.getName());
-        return categoryRepository.save(category);
-    }
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Category>> updateCategory(
+        @PathVariable String id,
+        @Valid @RequestBody CategoryDTO categoryDTO) {
+    Category category = categoryService.updateCategory(id, categoryDTO);
+    return ResponseEntity.ok(ApiResponse.success("Category updated successfully", category));
+}
 
+    /**
+     * Delete category - Admin only
+     */
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable Long id) {
-        categoryRepository.deleteById(id);
-    }
-} 
+@PreAuthorize("isAuthenticated()")
+public ResponseEntity<ApiResponse<String>> deleteCategory(@PathVariable String id) {
+    categoryService.deleteCategory(id);
+    return ResponseEntity.ok(ApiResponse.success("Category deleted successfully"));
+}
+}
