@@ -8,8 +8,14 @@ Thumbs.db
 
 # Environment files
 .env
-*.env
+.env.local
+.env.*.local
 
 # Logs
 logs/
-*.log\n.env.local\napplication-local.properties\nserviceAccountKey.json
+*.log
+
+# Secrets & Config
+application.properties
+application-*.properties
+serviceAccountKey.json
