@@ -19,3 +19,10 @@ logs/
 application.properties
 application-*.properties
 serviceAccountKey.json
+ServiceAccounts.json
+*serviceAccountKey*.json
+*ServiceAccounts*.json
+*.json
+!package.json
+!composer.json
+!tsconfig.json

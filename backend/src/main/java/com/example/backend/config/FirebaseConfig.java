@@ -13,24 +13,45 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
+    private static Firestore firestoreInstance;
+
     @Bean
     public Firestore firestore() throws Exception {
-        InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json");
-
-        if (serviceAccount == null) {
-            throw new RuntimeException("serviceAccountKey.json not found in resources folder");
+        if (firestoreInstance != null) {
+            return firestoreInstance;
         }
 
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
+        try {
+            InputStream serviceAccount;
+            String envKey = System.getenv("FIREBASE_KEY_JSON");
 
-        // Delete existing app on DevTools restart (Firestore client gets closed on restart)
-        if (!FirebaseApp.getApps().isEmpty()) {
-            FirebaseApp.getInstance().delete();
+            if (envKey != null && !envKey.isEmpty()) {
+                System.out.println("Initializing Firebase using FIREBASE_KEY_JSON environment variable");
+                serviceAccount = new java.io.ByteArrayInputStream(envKey.getBytes());
+            } else {
+                System.out.println("Initializing Firebase using serviceAccountKey.json from resources");
+                serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json");
+            }
+
+            if (serviceAccount == null) {
+                throw new RuntimeException(
+                        "Firebase credentials not found (neither FIREBASE_KEY_JSON nor serviceAccountKey.json found)");
+            }
+
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+
+            if (!FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.getInstance().delete();
+            }
+            FirebaseApp.initializeApp(options);
+
+            firestoreInstance = FirestoreClient.getFirestore();
+            return firestoreInstance;
+        } catch (Exception e) {
+            System.err.println("Firebase initialization failed: " + e.getMessage());
+            throw e;
         }
-        FirebaseApp.initializeApp(options);
-
-        return FirestoreClient.getFirestore();
     }
 }

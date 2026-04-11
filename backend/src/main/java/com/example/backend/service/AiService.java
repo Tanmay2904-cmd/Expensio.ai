@@ -63,14 +63,24 @@ public class AiService {
                 text, categoryNames);
 
         String result = callGroq(prompt).trim();
-        if (result.startsWith("```json")) {
-            result = result.substring(7);
-        }
-        if (result.startsWith("```")) {
-            result = result.substring(3);
-        }
-        if (result.endsWith("```")) {
-            result = result.substring(0, result.length() - 3);
+        
+        // Robust JSON extraction: look for the first '{' and last '}'
+        int firstBrace = result.indexOf('{');
+        int lastBrace = result.lastIndexOf('}');
+        
+        if (firstBrace != -1 && lastBrace != -1 && lastBrace > firstBrace) {
+            result = result.substring(firstBrace, lastBrace + 1);
+        } else {
+            // Fallback to original trimming if braces not found or invalid
+            if (result.startsWith("```json")) {
+                result = result.substring(7);
+            }
+            if (result.startsWith("```")) {
+                result = result.substring(3);
+            }
+            if (result.endsWith("```")) {
+                result = result.substring(0, result.length() - 3);
+            }
         }
         return result.trim();
     }

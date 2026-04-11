@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reports")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"}, allowCredentials = "true")
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" }, allowCredentials = "true")
 public class ReportController {
 
     @Autowired
@@ -39,7 +39,7 @@ public class ReportController {
             @RequestParam(required = false) String yearMonth,
             @RequestParam(required = false) String userId,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
         try {
             // Parse year-month (format: "2024-01")
             YearMonth targetMonth = yearMonth != null
@@ -58,10 +58,12 @@ public class ReportController {
                 if (!currentUser.getRole().equals("ADMIN")) {
                     throw new SecurityException("Only admins can view other users' reports");
                 }
-                expenses = expenseService.getExpensesByUserAndDateRange(userId, userDetails.getUsername(), startDate, endDate);
+                expenses = expenseService.getExpensesByUserAndDateRange(userId, userDetails.getUsername(), startDate,
+                        endDate);
             } else {
                 // Regular user requesting their own report
-                expenses = expenseService.getExpensesByUserAndDateRange(userDetails.getUsername(), userDetails.getUsername(), startDate, endDate);
+                expenses = expenseService.getExpensesByUserAndDateRange(userDetails.getUsername(),
+                        userDetails.getUsername(), startDate, endDate);
             }
 
             // Calculate summary statistics
@@ -144,7 +146,7 @@ public class ReportController {
      * Get list of all users for admin report selection
      */
     @GetMapping("/users")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAvailableUsers() {
         try {
             List<Map<String, Object>> users = userService.getAllUsers().stream()

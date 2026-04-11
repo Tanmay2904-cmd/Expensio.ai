@@ -35,14 +35,18 @@ axiosInstance.interceptors.response.use(
     } else if (data?.error) {
       error.message = data.error;
     }
-      // Auto-logout on auth errors
+      // Auto-logout on auth errors, but don't redirect if already on login/register pages
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
         localStorage.removeItem('user');
         localStorage.removeItem('userId');
-        window.location.href = '/login';
-        return;
+        
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/login' && currentPath !== '/register') {
+          window.location.href = '/login';
+        }
+        return Promise.reject(error);
       }
       return Promise.reject(error);
     }
