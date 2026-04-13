@@ -1,8 +1,12 @@
 import axios from 'axios';
 
+// Wake up Render backend on app load
+axios.get('https://expensio-ai.onrender.com/actuator/health').catch(() => {});
+
 // Create an axios instance with interceptors
 const axiosInstance = axios.create({
-  baseURL:'https://expensio-ai.onrender.com',
+  baseURL: 'https://expensio-ai.onrender.com',
+  timeout: 30000, // 30 second timeout
 });
 
 // Request interceptor - add JWT token to all requests
@@ -20,39 +24,35 @@ axiosInstance.interceptors.request.use(
 // Response interceptor - unwrap ApiResponse wrapper
 axiosInstance.interceptors.response.use(
   (response) => {
-    // If response has ApiResponse structure, unwrap it
     if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
       return {
         ...response,
-        data: response.data.data, // Extract the actual data from ApiResponse wrapper
+        data: response.data.data,
       };
     }
     return response;
   },
   (error) => {
-    // Handle error responses - backend may use 'message' (ApiResponse) or 'error' (GlobalExceptionHandler)
     const data = error.response?.data;
     if (data?.message) {
       error.message = data.message;
     } else if (data?.error) {
       error.message = data.error;
     }
-      // Auto-logout on auth errors, but don't redirect if already on login/register pages
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('user');
-        localStorage.removeItem('userId');
-        
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/login' && currentPath !== '/register') {
-          window.location.href = '/login';
-        }
-        return Promise.reject(error);
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userId');
+
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/register') {
+        window.location.href = '/login';
       }
       return Promise.reject(error);
     }
-  );
-
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;
