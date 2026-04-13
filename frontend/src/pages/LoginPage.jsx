@@ -73,7 +73,7 @@ const LoginPage = () => {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Left decorative panel (hidden on mobile) */}
+      {/* Left decorative panel - desktop only */}
       <Box sx={{
         display: { xs: 'none', md: 'flex' },
         width: '45%',
@@ -85,13 +85,11 @@ const LoginPage = () => {
         overflow: 'hidden',
         p: 6,
       }}>
-        {/* decorative circles */}
         <Box sx={{ position: 'absolute', width: 350, height: 350, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', top: -100, left: -100 }} />
         <Box sx={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -50, right: -80 }} />
         <Box sx={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '40%', right: -30 }} />
 
         <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white' }}>
-          {/* Logo image */}
           <Box sx={{
             width: 100, height: 100, mx: 'auto', mb: 3,
             borderRadius: '24px',
@@ -100,19 +98,13 @@ const LoginPage = () => {
             border: '1.5px solid rgba(255,255,255,0.25)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-            p: 1.5,
+            overflow: 'hidden', p: 1.5,
           }}>
             <Box component="img" src="/logo.png" alt="Expensio Logo" sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1.5 }}>
-            <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-              Expensio
-            </Typography>
-            <Box sx={{
-              background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.35)',
-              borderRadius: '8px', px: 1, py: 0.25, backdropFilter: 'blur(8px)',
-            }}>
+            <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>Expensio</Typography>
+            <Box sx={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '8px', px: 1, py: 0.25, backdropFilter: 'blur(8px)' }}>
               <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.06em', color: 'white' }}>AI</Typography>
             </Box>
           </Box>
@@ -126,14 +118,18 @@ const LoginPage = () => {
       <Box sx={{
         flex: 1,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: { xs: 'flex-start', md: 'center' },
         justifyContent: 'center',
-        p: { xs: 2, md: 5 },
+        pt: { xs: 6, md: 0 },
+        px: { xs: 2.5, md: 5 },
+        pb: { xs: 4, md: 0 },
         background: isDark ? 'rgba(8,8,24,0.97)' : 'rgba(240,242,255,0.97)',
+        minHeight: '100vh',
       }}>
-        <Box sx={{ width: '100%', maxWidth: 400 }}>
+        <Box sx={{ width: '100%', maxWidth: { xs: '100%', md: 400 } }}>
+
           {/* Mobile logo */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1.5, mb: 4 }}>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1.5, mb: 3 }}>
             <Box sx={{
               width: 40, height: 40, borderRadius: '10px',
               background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
@@ -148,22 +144,17 @@ const LoginPage = () => {
                 fontWeight: 800,
                 background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                 backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              }}>
-                Expensio
-              </Typography>
-              <Box sx={{
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                borderRadius: '5px', px: 0.6, py: 0.1,
-              }}>
+              }}>Expensio</Typography>
+              <Box sx={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', borderRadius: '5px', px: 0.6, py: 0.1 }}>
                 <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: 'white', letterSpacing: '0.04em' }}>AI</Typography>
               </Box>
             </Box>
           </Box>
 
-          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.75, letterSpacing: '-0.02em' }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.75, letterSpacing: '-0.02em', fontSize: { xs: '1.8rem', md: '2.125rem' } }}>
             Sign in
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
             Don't have an account?{' '}
             <Box component="span"
               onClick={() => navigate('/register')}
@@ -175,7 +166,7 @@ const LoginPage = () => {
 
           {error && (
             <Alert severity="error" sx={{
-              mb: 3, borderRadius: '12px',
+              mb: 2.5, borderRadius: '12px',
               background: isDark ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.05)',
               border: '1px solid rgba(239,68,68,0.25)',
               '& .MuiAlert-icon': { color: '#f87171' },

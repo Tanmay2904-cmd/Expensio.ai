@@ -3,13 +3,16 @@ import axios from 'axios';
 // Wake up Render backend on app load
 axios.get('https://expensio-ai.onrender.com/actuator/health').catch(() => {});
 
-// Create an axios instance with interceptors
+// Keep backend alive - ping every 14 minutes
+setInterval(() => {
+  axios.get('https://expensio-ai.onrender.com/actuator/health').catch(() => {});
+}, 14 * 60 * 1000);
+
 const axiosInstance = axios.create({
   baseURL: 'https://expensio-ai.onrender.com',
-  timeout: 30000, // 30 second timeout
+  timeout: 60000,
 });
 
-// Request interceptor - add JWT token to all requests
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -21,7 +24,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - unwrap ApiResponse wrapper
 axiosInstance.interceptors.response.use(
   (response) => {
     if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
