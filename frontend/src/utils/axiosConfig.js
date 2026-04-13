@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with interceptors
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL:'https://expensio-ai.onrender.com',
 });
 
 // Request interceptor - add JWT token to all requests
