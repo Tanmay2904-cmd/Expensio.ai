@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // Create an axios instance with interceptors
-const axiosInstance = axios.create();
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:8080',
+});
 
 // Request interceptor - add JWT token to all requests
 axiosInstance.interceptors.request.use(

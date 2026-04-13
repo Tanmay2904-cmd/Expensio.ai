@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 
 @Configuration
 public class FirebaseConfig {
@@ -27,10 +28,19 @@ public class FirebaseConfig {
 
             if (envKey != null && !envKey.isEmpty()) {
                 System.out.println("Initializing Firebase using FIREBASE_KEY_JSON environment variable");
-                serviceAccount = new java.io.ByteArrayInputStream(envKey.getBytes());
+                serviceAccount = new ByteArrayInputStream(envKey.getBytes());
             } else {
-                System.out.println("Initializing Firebase using serviceAccountKey.json from resources");
+                // Try original name
                 serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json");
+
+                // Fallback to user's new name
+                if (serviceAccount == null) {
+                    serviceAccount = getClass().getClassLoader().getResourceAsStream("expensiofirebase.json");
+                }
+
+                if (serviceAccount != null) {
+                    System.out.println("Initializing Firebase using JSON key file from resources");
+                }
             }
 
             if (serviceAccount == null) {

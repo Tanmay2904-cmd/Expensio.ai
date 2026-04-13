@@ -43,3 +43,5 @@ application.properties
 application-*.properties
 .env
 .env.local
+src/main/resources/application.properties
+.vscode/launch.json
