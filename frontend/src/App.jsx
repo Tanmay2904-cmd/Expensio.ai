@@ -99,76 +99,94 @@ const AppContent = () => {
             
             {/* NAVBAR */}
             <AppBar
-              position="fixed"
-              elevation={0}
-              sx={{
-                zIndex: (t) => t.zIndex.drawer + 1,
-                width: { xs: '100%', md: token ? `calc(100% - ${drawerWidth}px)` : '100%' },
-                ml: { xs: 0, md: token ? `${drawerWidth}px` : 0 },
-                background: isDark
-                  ? 'rgba(8, 8, 24, 0.85)'
-                  : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                color: '#fff',
-                backdropFilter: isDark ? 'blur(24px)' : 'none',
-                WebkitBackdropFilter: isDark ? 'blur(24px)' : 'none',
-              }}
-            >
-              <Toolbar sx={{ minHeight: 64, px: 2, gap: 1 }}>
+  position="fixed"
+  elevation={0}
+  sx={{
+    zIndex: (t) => t.zIndex.drawer + 1,
+    width: { xs: '100%', md: token ? `calc(100% - ${drawerWidth}px)` : '100%' },
+    ml: { xs: 0, md: token ? `${drawerWidth}px` : 0 },
 
-                {token && (
-                  <IconButton
-                    onClick={() => setMobileOpen(true)}
-                    sx={{ display: { md: 'none' }, color: '#fff' }}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                )}
+    // ✅ FINAL COLORS
+    background: isDark
+      ? 'rgba(8, 8, 24, 0.85)'
+      : '#ffffff',
 
-                <Typography sx={{ flexGrow: 1, fontWeight: 800 }}>
-                  Expensio
-                </Typography>
+    color: isDark ? '#fff' : '#111',
 
-                {token && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Avatar sx={{ width: 28, height: 28 }}>
-                        {(user || 'U').charAt(0).toUpperCase()}
-                      </Avatar>
+    backdropFilter: isDark ? 'blur(24px)' : 'none',
+    WebkitBackdropFilter: isDark ? 'blur(24px)' : 'none',
 
-                      <Typography
-                        sx={{
-                          maxWidth: { xs: 60, sm: 120 },
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          fontSize: '0.8rem',
-                          color: '#fff',
-                        }}
-                      >
-                        {user}
-                      </Typography>
-                    </Box>
+    borderBottom: isDark
+      ? '1px solid rgba(99,102,241,0.15)'
+      : '1px solid #e5e7eb',
+  }}
+>
+  <Toolbar sx={{ minHeight: 64, px: 2, gap: 1 }}>
 
-                    <Button
-                      onClick={handleLogout}
-                      size="small"
-                      sx={{
-                        flexShrink: 0,
-                        color: '#fff',
-                        fontSize: '0.75rem',
-                      }}
-                    >
-                      Logout
-                    </Button>
-                  </Box>
-                )}
+    {/* MENU */}
+    {token && (
+      <IconButton
+        onClick={() => setMobileOpen(true)}
+        sx={{ display: { md: 'none' }, color: 'inherit' }}
+      >
+        <MenuIcon />
+      </IconButton>
+    )}
 
-                <IconButton onClick={colorMode.toggleColorMode} sx={{ color: '#fff' }}>
-                  {mode === 'dark' ? <LightMode /> : <DarkMode />}
-                </IconButton>
+    {/* LOGO */}
+    <Typography
+      sx={{
+        flexGrow: 1,
+        fontWeight: 800,
+        fontSize: '1.1rem',
+      }}
+    >
+      Expensio
+    </Typography>
 
-              </Toolbar>
-            </AppBar>
+    {/* USER + LOGOUT */}
+    {token && (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+        
+        <Avatar sx={{ width: 28, height: 28 }}>
+          {(user || 'U').charAt(0).toUpperCase()}
+        </Avatar>
+
+        <Typography
+          sx={{
+            maxWidth: { xs: 60, sm: 120 },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontSize: '0.8rem',
+          }}
+        >
+          {user}
+        </Typography>
+
+        <Button
+          onClick={handleLogout}
+          size="small"
+          sx={{
+            flexShrink: 0,
+            fontSize: '0.75rem',
+            color: isDark ? '#fff' : '#ef4444',
+          }}
+        >
+          Logout
+        </Button>
+
+      </Box>
+    )}
+
+    {/* DARK MODE */}
+    <IconButton onClick={colorMode.toggleColorMode} sx={{ color: 'inherit' }}>
+      {mode === 'dark' ? <LightMode /> : <DarkMode />}
+    </IconButton>
+
+  </Toolbar>
+</AppBar>
+
 
             <Toolbar />
 
