@@ -96,9 +96,28 @@ const AppContent = () => {
           )}
 
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-            {/* 🔥 NAVBAR */}
-            <AppBar position="fixed">
-              <Toolbar sx={{ gap: 1 }}>
+            
+            {/* 🔥 FIXED GLASS NAVBAR */}
+            <AppBar
+              position="fixed"
+              elevation={0}
+              sx={{
+                zIndex: (t) => t.zIndex.drawer + 1,
+                width: { xs: '100%', md: token ? `calc(100% - ${drawerWidth}px)` : '100%' },
+                ml: { xs: 0, md: token ? `${drawerWidth}px` : 0 },
+                background: isDark
+                  ? 'rgba(8, 8, 24, 0.85)'
+                  : 'rgba(240, 242, 255, 0.85)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                borderBottom: isDark
+                  ? '1px solid rgba(99,102,241,0.15)'
+                  : '1px solid rgba(99,102,241,0.12)',
+              }}
+            >
+              <Toolbar sx={{ minHeight: 64, px: 2, gap: 1 }}>
+
+                {/* MENU */}
                 {token && (
                   <IconButton
                     onClick={() => setMobileOpen(true)}
@@ -108,11 +127,12 @@ const AppContent = () => {
                   </IconButton>
                 )}
 
-                <Typography sx={{ flexGrow: 1, fontWeight: 700 }}>
+                {/* LOGO */}
+                <Typography sx={{ flexGrow: 1, fontWeight: 800 }}>
                   Expensio
                 </Typography>
 
-                {/* 🔥 FIXED USER + LOGOUT */}
+                {/* USER + LOGOUT */}
                 {token && (
                   <Box
                     sx={{
@@ -122,14 +142,7 @@ const AppContent = () => {
                       minWidth: 0,
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        minWidth: 0,
-                      }}
-                    >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar sx={{ width: 28, height: 28 }}>
                         {(user || 'U').charAt(0).toUpperCase()}
                       </Avatar>
@@ -152,7 +165,7 @@ const AppContent = () => {
                       size="small"
                       sx={{
                         flexShrink: 0,
-                        color: 'red',
+                        color: '#f87171',
                         fontSize: '0.75rem',
                       }}
                     >
@@ -161,9 +174,11 @@ const AppContent = () => {
                   </Box>
                 )}
 
+                {/* DARK MODE */}
                 <IconButton onClick={colorMode.toggleColorMode}>
                   {mode === 'dark' ? <LightMode /> : <DarkMode />}
                 </IconButton>
+
               </Toolbar>
             </AppBar>
 
@@ -174,50 +189,16 @@ const AppContent = () => {
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <DashboardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/expenses"
-                  element={
-                    <ProtectedRoute>
-                      <ExpensesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/categories"
-                  element={
-                    <ProtectedRoute>
-                      <CategoriesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/reports"
-                  element={
-                    <ProtectedRoute>
-                      <ReportsPage />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path="/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
+                <Route path="/categories" element={<ProtectedRoute><CategoriesPage /></ProtectedRoute>} />
+                <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
                 {role === 'ADMIN' && (
-                  <Route
-                    path="/users"
-                    element={
-                      <ProtectedRoute adminOnly>
-                        <UsersPage />
-                      </ProtectedRoute>
-                    }
-                  />
+                  <Route path="/users" element={<ProtectedRoute adminOnly><UsersPage /></ProtectedRoute>} />
                 )}
               </Routes>
             </Box>
+
           </Box>
         </Box>
 
