@@ -97,7 +97,7 @@ const AppContent = () => {
 
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
             
-            {/* 🔥 FIXED GLASS NAVBAR */}
+            {/* NAVBAR */}
             <AppBar
               position="fixed"
               elevation={0}
@@ -107,41 +107,29 @@ const AppContent = () => {
                 ml: { xs: 0, md: token ? `${drawerWidth}px` : 0 },
                 background: isDark
                   ? 'rgba(8, 8, 24, 0.85)'
-                  : 'rgba(240, 242, 255, 0.85)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                borderBottom: isDark
-                  ? '1px solid rgba(99,102,241,0.15)'
-                  : '1px solid rgba(99,102,241,0.12)',
+                  : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                color: '#fff',
+                backdropFilter: isDark ? 'blur(24px)' : 'none',
+                WebkitBackdropFilter: isDark ? 'blur(24px)' : 'none',
               }}
             >
               <Toolbar sx={{ minHeight: 64, px: 2, gap: 1 }}>
 
-                {/* MENU */}
                 {token && (
                   <IconButton
                     onClick={() => setMobileOpen(true)}
-                    sx={{ display: { md: 'none' } }}
+                    sx={{ display: { md: 'none' }, color: '#fff' }}
                   >
                     <MenuIcon />
                   </IconButton>
                 )}
 
-                {/* LOGO */}
                 <Typography sx={{ flexGrow: 1, fontWeight: 800 }}>
                   Expensio
                 </Typography>
 
-                {/* USER + LOGOUT */}
                 {token && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      minWidth: 0,
-                    }}
-                  >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar sx={{ width: 28, height: 28 }}>
                         {(user || 'U').charAt(0).toUpperCase()}
@@ -154,6 +142,7 @@ const AppContent = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           fontSize: '0.8rem',
+                          color: '#fff',
                         }}
                       >
                         {user}
@@ -165,7 +154,7 @@ const AppContent = () => {
                       size="small"
                       sx={{
                         flexShrink: 0,
-                        color: '#f87171',
+                        color: '#fff',
                         fontSize: '0.75rem',
                       }}
                     >
@@ -174,8 +163,7 @@ const AppContent = () => {
                   </Box>
                 )}
 
-                {/* DARK MODE */}
-                <IconButton onClick={colorMode.toggleColorMode}>
+                <IconButton onClick={colorMode.toggleColorMode} sx={{ color: '#fff' }}>
                   {mode === 'dark' ? <LightMode /> : <DarkMode />}
                 </IconButton>
 
@@ -184,7 +172,6 @@ const AppContent = () => {
 
             <Toolbar />
 
-            {/* ROUTES */}
             <Box sx={{ p: 2 }}>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
