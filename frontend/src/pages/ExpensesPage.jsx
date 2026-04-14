@@ -98,7 +98,7 @@ const ExpensesPage = () => {
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
             backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            💸 {role === 'ADMIN' ? 'All Expenses' : 'My Expenses'}
+              {role === 'ADMIN' ? 'All Expenses' : 'My Expenses'}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>

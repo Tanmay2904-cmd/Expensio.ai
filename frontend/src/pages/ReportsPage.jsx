@@ -4,7 +4,7 @@ import {
   CircularProgress, Alert, Table, TableHead, TableRow, TableCell,
   TableBody, Chip, IconButton, Tooltip, useTheme
 } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RT, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RT, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Download as DownloadIcon, Assessment as AssessmentIcon } from '@mui/icons-material';
 import axiosInstance from '../utils/axiosConfig';
 import { useAuth } from '../context/AuthContext';
@@ -17,10 +17,10 @@ const GlassCard = ({ children, sx = {} }) => {
   return (
     <Paper elevation={0} sx={{
       borderRadius: '20px', p: { xs: 2, md: 2.5 },
-      background: isDark ? 'rgba(13,13,36,0.7)' : 'rgba(255,255,255,0.8)',
+      background: isDark ? 'rgba(13,13,36,0.7)' : 'rgba(255,255,255,0.95)',
       backdropFilter: 'blur(20px)',
-      border: isDark ? '1px solid rgba(99,102,241,0.18)' : '1px solid rgba(99,102,241,0.12)',
-      boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 32px rgba(99,102,241,0.08)',
+      border: isDark ? '1px solid rgba(99,102,241,0.18)' : '1px solid rgba(99,102,241,0.1)',
+      boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 4px 24px rgba(99,102,241,0.08)',
       ...sx
     }}>
       {children}
@@ -53,21 +53,30 @@ const StatMiniCard = ({ label, value, color }) => {
   const isDark = theme.palette.mode === 'dark';
   return (
     <Paper elevation={0} sx={{
-      borderRadius: '16px', p: 2.5, textAlign: 'center',
+      borderRadius: '16px', p: { xs: 1.5, md: 2.5 }, textAlign: 'center',
       background: isDark ? `rgba(${color}, 0.08)` : `rgba(${color}, 0.05)`,
       border: `1px solid rgba(${color}, 0.2)`,
       transition: 'transform 0.25s ease',
       '&:hover': { transform: 'translateY(-3px)' }
     }}>
-      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', mb: 0.75 }}>
+      <Typography variant="caption" sx={{
+        color: 'text.secondary', fontWeight: 600, letterSpacing: '0.06em',
+        textTransform: 'uppercase', display: 'block', mb: 0.75,
+        fontSize: { xs: '0.65rem', md: '0.72rem' }
+      }}>
         {label}
       </Typography>
-      <Typography variant="h5" sx={{ fontWeight: 800, color: `rgb(${color})` }}>{value}</Typography>
+      <Typography sx={{
+        fontWeight: 800, color: `rgb(${color})`,
+        fontSize: { xs: '1rem', md: '1.4rem' },
+        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      }}>
+        {value}
+      </Typography>
     </Paper>
   );
 };
 
-// FIX: Use local date instead of UTC to avoid month offset issues
 const getCurrentYearMonth = () => {
   const today = new Date();
   const y = today.getFullYear();
@@ -79,8 +88,7 @@ const getLast12Months = () => {
   const months = [];
   const today = new Date();
   const year = today.getFullYear();
-  const month = today.getMonth(); // 0-indexed
-
+  const month = today.getMonth();
   for (let i = 0; i < 12; i++) {
     let y = year;
     let m = month - i;
@@ -96,7 +104,7 @@ const ReportsPage = () => {
   const { role } = useAuth();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
-  const [yearMonth, setYearMonth] = useState(getCurrentYearMonth()); // FIX: use local date
+  const [yearMonth, setYearMonth] = useState(getCurrentYearMonth());
   const [selectedUserId, setSelectedUserId] = useState('');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -144,18 +152,28 @@ const ReportsPage = () => {
   };
 
   return (
-    <Box sx={{ pb: 2 }}>
+    <Box sx={{ pb: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{
+        mb: 3, p: { xs: 2, md: 2.5 }, borderRadius: '20px',
+        background: isDark
+          ? 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 100%)'
+          : 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.05) 100%)',
+        border: isDark ? '1px solid rgba(99,102,241,0.2)' : '1px solid rgba(99,102,241,0.1)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2,
+      }}>
         <Box>
-          <Typography variant="h4" sx={{
+          <Typography variant="h5" sx={{
             fontWeight: 800, letterSpacing: '-0.02em', mb: 0.5,
+            fontSize: { xs: '1.4rem', md: '1.8rem' },
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
             backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            📊 Monthly Reports
+            Monthly Reports
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>Generate and export your expense reports</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            Generate and export your expense reports
+          </Typography>
         </Box>
         {report && (
           <Tooltip title="Export CSV">
@@ -174,11 +192,13 @@ const ReportsPage = () => {
       {/* Filters */}
       <GlassCard sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-          <TextField select label="Month" value={yearMonth} onChange={e => setYearMonth(e.target.value)} size="small" sx={{ minWidth: 200, ...inputSx }}>
+          <TextField select label="Month" value={yearMonth} onChange={e => setYearMonth(e.target.value)} size="small"
+            sx={{ minWidth: { xs: '100%', sm: 200 }, ...inputSx }}>
             {getLast12Months().map(m => <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>)}
           </TextField>
           {role === 'ADMIN' && (
-            <TextField select label="User" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)} size="small" sx={{ minWidth: 180, ...inputSx }}>
+            <TextField select label="User" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)} size="small"
+              sx={{ minWidth: { xs: '100%', sm: 180 }, ...inputSx }}>
               <MenuItem value="">All Users</MenuItem>
               {users.map(u => <MenuItem key={u.id} value={u.id}>{u.name}</MenuItem>)}
             </TextField>
@@ -187,6 +207,7 @@ const ReportsPage = () => {
             startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <AssessmentIcon fontSize="small" />}
             sx={{
               fontWeight: 700, borderRadius: '10px', px: 3, py: 1.1,
+              width: { xs: '100%', sm: 'auto' },
               background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
               boxShadow: '0 4px 14px rgba(99,102,241,0.3)',
               '&:hover': { background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', transform: 'translateY(-1px)' }
@@ -201,7 +222,6 @@ const ReportsPage = () => {
 
       {!report && !loading && (
         <GlassCard sx={{ textAlign: 'center', py: 6 }}>
-          <Typography sx={{ fontSize: '3rem', mb: 1.5 }}>📊</Typography>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.75 }}>No Report Generated</Typography>
           <Typography variant="body2" color="text.secondary">Select a month and click Generate Report</Typography>
         </GlassCard>
@@ -226,13 +246,13 @@ const ReportsPage = () => {
           {/* Charts */}
           <Grid container spacing={2} sx={{ mb: 2.5 }}>
             <Grid item xs={12} md={5}>
-              <GlassCard sx={{ height: 320 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>🍩 Category Breakdown</Typography>
-                <ResponsiveContainer width="100%" height={260}>
+              <GlassCard sx={{ height: { xs: 'auto', md: 340 } }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>Category Breakdown</Typography>
+                <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
                     <Pie
                       data={Object.entries(report.categoryBreakdown).map(([name, value]) => ({ name, value }))}
-                      dataKey="value" nameKey="name" cx="50%" cy="48%"
+                      dataKey="value" nameKey="name" cx="50%" cy="45%"
                       outerRadius={90} innerRadius={45} paddingAngle={3}
                     >
                       {Object.entries(report.categoryBreakdown).map((_, i) => (
@@ -241,15 +261,21 @@ const ReportsPage = () => {
                       ))}
                     </Pie>
                     <RT content={<CustomTooltip />} />
+                    <Legend iconType="circle" iconSize={7}
+                      formatter={(value) => <span style={{ fontSize: '0.72rem', color: theme.palette.text.secondary }}>{value}</span>}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </GlassCard>
             </Grid>
             <Grid item xs={12} md={7}>
-              <GlassCard sx={{ height: 320 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>📈 Daily Spending</Typography>
-                <ResponsiveContainer width="100%" height={260}>
-                  <BarChart data={Object.entries(report.dailyBreakdown).map(([date, amount]) => ({ date, amount }))} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+              <GlassCard sx={{ height: { xs: 'auto', md: 340 } }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>Daily Spending</Typography>
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart
+                    data={Object.entries(report.dailyBreakdown).map(([date, amount]) => ({ date, amount }))}
+                    margin={{ top: 5, right: 5, left: -10, bottom: 0 }}
+                  >
                     <defs>
                       <linearGradient id="rptBar" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#6366f1" />
@@ -257,8 +283,8 @@ const ReportsPage = () => {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} />
-                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: theme.palette.text.secondary }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: theme.palette.text.secondary }} axisLine={false} tickLine={false} width={50} />
+                    <XAxis dataKey="date" tick={{ fontSize: 9, fill: theme.palette.text.secondary }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: theme.palette.text.secondary }} axisLine={false} tickLine={false} width={45} />
                     <RT content={<CustomTooltip />} />
                     <Bar dataKey="amount" fill="url(#rptBar)" radius={[6, 6, 0, 0]} maxBarSize={32} />
                   </BarChart>
@@ -267,26 +293,31 @@ const ReportsPage = () => {
             </Grid>
           </Grid>
 
-          {/* Top Expenses */}
+          {/* Top Expenses Table */}
           <GlassCard>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>🏆 Top 5 Expenses</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>Top 5 Expenses</Typography>
             <Box sx={{
-              borderRadius: '12px', overflow: 'hidden',
+              borderRadius: '12px',
+              overflow: 'auto',
               border: isDark ? '1px solid rgba(99,102,241,0.12)' : '1px solid rgba(99,102,241,0.1)',
             }}>
-              <Table size="small">
+              <Table size="small" sx={{ minWidth: 400 }}>
                 <TableHead>
                   <TableRow sx={{ background: isDark ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)' }}>
                     {['Date', 'Description', 'Category', 'Amount'].map(h => (
-                      <TableCell key={h} sx={{ fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: isDark ? '#a5b4fc' : '#6366f1', py: 1.5 }}>{h}</TableCell>
+                      <TableCell key={h} sx={{
+                        fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.06em',
+                        textTransform: 'uppercase', color: isDark ? '#a5b4fc' : '#6366f1',
+                        py: 1.5, whiteSpace: 'nowrap',
+                      }}>{h}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {(report.topExpenses || []).map((exp, i) => (
                     <TableRow key={i} sx={{ '&:hover': { background: isDark ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)' } }}>
-                      <TableCell sx={{ fontSize: '0.82rem', color: 'text.secondary', py: 1.5 }}>{fmtDate(exp.date)}</TableCell>
-                      <TableCell sx={{ fontSize: '0.875rem', fontWeight: 500 }}>{exp.description}</TableCell>
+                      <TableCell sx={{ fontSize: '0.8rem', color: 'text.secondary', py: 1.5, whiteSpace: 'nowrap' }}>{fmtDate(exp.date)}</TableCell>
+                      <TableCell sx={{ fontSize: '0.85rem', fontWeight: 500 }}>{exp.description}</TableCell>
                       <TableCell>
                         <Chip label={exp.category} size="small" sx={{
                           background: isDark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
@@ -295,7 +326,9 @@ const ReportsPage = () => {
                           fontWeight: 600, fontSize: '0.7rem', height: 22,
                         }} />
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 700, color: '#10b981', fontVariantNumeric: 'tabular-nums' }}>{fmt(exp.amount)}</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#10b981', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                        {fmt(exp.amount)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
