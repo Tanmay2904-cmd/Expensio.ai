@@ -227,7 +227,7 @@ const DashboardPage = () => {
         <Grid item xs={12} md={7}>
           <GlassCard sx={{ height: { xs: 300, md: 360 } }}>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '0.95rem', md: '1.1rem' } }}>
-                Monthly Spending Trend
+              📈 Monthly Spending Trend
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
               {role === 'ADMIN' ? 'System-wide expense trend' : 'Your personal expense history'}
@@ -259,9 +259,9 @@ const DashboardPage = () => {
 
         {/* Pie Chart */}
         <Grid item xs={12} md={5}>
-          <GlassCard sx={{ height: { xs: auto, md: 360 } }}>
+          <GlassCard sx={{ height: { xs: 300, md: 360 } }}>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '0.95rem', md: '1.1rem' } }}>
-                Category Breakdown
+              🍩 Category Breakdown
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
               Spending distribution by category
@@ -270,7 +270,7 @@ const DashboardPage = () => {
               ? <Skeleton variant="circular" width={160} height={160} sx={{ mx: 'auto', mt: 3 }} />
               : pieData.length > 0
                 ? (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={240}>
                     <PieChart>
                       <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="42%"
                         outerRadius={85} innerRadius={45} paddingAngle={3} isAnimationActive>

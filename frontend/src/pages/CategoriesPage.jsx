@@ -69,7 +69,7 @@ const CategoriesPage = () => {
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
             backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-              Expense Categories
+            🏷️ Expense Categories
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             {loading ? 'Loading...' : `${categories.length} categor${categories.length !== 1 ? 'ies' : 'y'} configured`}
