@@ -51,7 +51,9 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:5174",
-                "https://expensio-ai.netlify.app"));
+                "https://expensio-ai.netlify.app",
+                "https://expensio-ai-b2a64.web.app",
+                "https://expensio-ai-b2a64.firebaseapp.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -67,7 +69,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/actuator/health").permitAll() // for UptimeRobot keep-alive
+                .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
