@@ -133,7 +133,7 @@ const UserTable = ({ users, onEdit, onDelete }) => {
       </Box>
 
       <Box sx={{
-        borderRadius: '14px', overflow: 'hidden', flex: 1, minHeight: 0,
+        borderRadius: '14px', overflow: 'hidden', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', width: '100%',
         border: isDark ? '1px solid rgba(99,102,241,0.12)' : '1px solid rgba(99,102,241,0.1)',
         boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.2)' : '0 4px 20px rgba(99,102,241,0.06)',
       }}>

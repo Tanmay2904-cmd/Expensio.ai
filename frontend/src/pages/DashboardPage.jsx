@@ -11,6 +11,9 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CategoryIcon from '@mui/icons-material/Category';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ShieldIcon from '@mui/icons-material/Shield';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import DonutLargeIcon from '@mui/icons-material/DonutLarge';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 
 const COLORS = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a855f7'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -225,10 +228,13 @@ const DashboardPage = () => {
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
         {/* Area Chart */}
         <Grid item xs={12} md={7}>
-          <GlassCard sx={{ height: { xs: 300, md: 360 } }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '0.95rem', md: '1.1rem' } }}>
-              📈 Monthly Spending Trend
-            </Typography>
+          <GlassCard sx={{ height: { xs: 300, md: 360 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+              <ShowChartIcon sx={{ fontSize: 18, color: '#6366f1' }} />
+              <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' } }}>
+                Monthly Spending Trend
+              </Typography>
+            </Box>
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
               {role === 'ADMIN' ? 'System-wide expense trend' : 'Your personal expense history'}
             </Typography>
@@ -259,10 +265,13 @@ const DashboardPage = () => {
 
         {/* Pie Chart */}
         <Grid item xs={12} md={5}>
-          <GlassCard sx={{ height: { xs: 300, md: 360 } }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '0.95rem', md: '1.1rem' } }}>
-              🍩 Category Breakdown
-            </Typography>
+          <GlassCard sx={{ height: { xs: 300, md: 360 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+              <DonutLargeIcon sx={{ fontSize: 18, color: '#8b5cf6' }} />
+              <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' } }}>
+                Category Breakdown
+              </Typography>
+            </Box>
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
               Spending distribution by category
             </Typography>
@@ -288,9 +297,9 @@ const DashboardPage = () => {
                   </ResponsiveContainer>
                 )
                 : (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 220, gap: 1 }}>
-                    <Typography sx={{ fontSize: '2.5rem' }}>💸</Typography>
-                    <Typography variant="body2" color="text.secondary">No expense data yet</Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 220, gap: 1.5 }}>
+                    <AccountBalanceWalletIcon sx={{ fontSize: 40, color: 'text.disabled' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>No expense data yet</Typography>
                     <Typography variant="caption" color="text.secondary">Add your first expense to see insights</Typography>
                   </Box>
                 )
@@ -301,9 +310,12 @@ const DashboardPage = () => {
 
       {/* Bar Chart */}
       <GlassCard>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '0.95rem', md: '1.1rem' } }}>
-          📊 Monthly Bar Overview
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+          <BarChartIcon sx={{ fontSize: 18, color: '#6366f1' }} />
+          <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' } }}>
+            Monthly Bar Overview
+          </Typography>
+        </Box>
         <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
           Comparative spending across months
         </Typography>

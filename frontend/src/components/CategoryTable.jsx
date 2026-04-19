@@ -160,7 +160,7 @@ const CategoryTable = ({ categories, onEdit, onDelete }) => {
       </Box>
 
       {/* Desktop Table */}
-      <Box sx={{ display: { xs: 'none', md: 'block' }, borderRadius: '14px', overflow: 'hidden', border: isDark ? '1px solid rgba(99,102,241,0.12)' : '1px solid rgba(99,102,241,0.1)' }}>
+      <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', width: '100%', borderRadius: '14px', overflow: 'hidden', border: isDark ? '1px solid rgba(99,102,241,0.12)' : '1px solid rgba(99,102,241,0.1)' }}>
         <DataGrid
           rows={filteredCategories}
           columns={columns}

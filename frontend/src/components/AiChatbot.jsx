@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Paper, Typography, TextField, IconButton, Fab, CircularProgress, Divider, useTheme, Tooltip } from '@mui/material';
-import { Close, Send } from '@mui/icons-material';
+import { Close, Send, AutoAwesome } from '@mui/icons-material';
 import axiosInstance from '../utils/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,7 +10,7 @@ const AiChatbot = () => {
     const isDark = theme.palette.mode === 'dark';
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { sender: 'AI', text: "Hi! 👋 I'm your Expensio AI assistant." }
+        { sender: 'AI', text: "Hi! I'm your Expensio AI assistant. Ask me anything about your finances." }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -40,12 +40,13 @@ const AiChatbot = () => {
     };
 
     return (
-        <Box sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1300 }}>
+        <Box sx={{ position: 'fixed', bottom: { xs: 16, sm: 24 }, right: { xs: 16, sm: 24 }, zIndex: 1300 }}>
             {/* CHAT BOX */}
             {open && (
                 <Paper sx={{
-                    width: 370,
-                    height: 520,
+                    width: { xs: 'calc(100vw - 32px)', sm: 370 },
+                    height: { xs: 'calc(100vh - 120px)', sm: 520 },
+                    maxHeight: 600,
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: '20px',
@@ -53,11 +54,18 @@ const AiChatbot = () => {
                 }}>
                     <Box sx={{
                         background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                        p: 2
+                        p: 1.5,
+                        px: 2.5,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
                     }}>
                         <Typography sx={{ color: '#fff', fontWeight: 'bold' }}>
                             Expensio AI
                         </Typography>
+                        <IconButton size="small" onClick={() => setOpen(false)} sx={{ color: '#fff', '&:hover': { background: 'rgba(255,255,255,0.1)' } }}>
+                            <Close fontSize="small" />
+                        </IconButton>
                     </Box>
 
                     <Box sx={{ flex: 1, p: 2, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -96,7 +104,14 @@ const AiChatbot = () => {
                         <div ref={messagesEndRef} />
                     </Box>
 
-                    <Box sx={{ p: 1, display: 'flex', gap: 0.5 }}>
+                    <Box sx={{
+                        p: 1.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
+                        background: isDark ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.01)'
+                    }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -109,64 +124,44 @@ const AiChatbot = () => {
                                     handleSend();
                                 }
                             }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': { borderRadius: '24px' }
+                            }}
                         />
-                        <IconButton onClick={handleSend} disabled={loading} sx={{ color: 'text.primary' }}>
-                            <Send />
+                        <IconButton onClick={handleSend} disabled={loading} sx={{
+                            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                            color: '#fff',
+                            width: 40, height: 40,
+                            '&:hover': { background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', transform: 'scale(1.05)' },
+                            '&:disabled': { background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', color: 'text.disabled' }
+                        }}>
+                            <Send fontSize="small" sx={{ ml: 0.5 }} />
                         </IconButton>
                     </Box>
                 </Paper>
             )}
 
-            {/* FAB BUTTON - ✅ FIXED CLOSE ICON VISIBILITY */}
-            <Tooltip title="AI Assistant">
-                <Fab
-                    onClick={() => setOpen(!open)}
-                    sx={{
-                        background: 'transparent',
-                        boxShadow: 'none',
-                        width: 60,
-                        height: 60,
-                        minHeight: 'auto',
-                        color: 'text.primary', // ✅ KEY FIX: Theme-aware color
-                        '&:hover': {
-                            background: 'transparent',
-                            transform: 'scale(1.1)'
-                        }
-                    }}
-                >
-                    {open ? <Close fontSize="small" /> : (
-                        // 🔥 BIG LOGO FULL BUTTON
-                        <svg width="60" height="60" viewBox="0 0 64 64">
-                            <defs>
-                                <linearGradient id="g" x1="0" y1="0" x2="64" y2="64">
-                                    <stop stopColor="#6366f1" />
-                                    <stop offset="1" stopColor="#8b5cf6" />
-                                </linearGradient>
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="2.5" />
-                                </filter>
-                            </defs>
-                            <rect
-                                x="2" y="4" width="60" height="56" rx="22"
-                                fill="url(#g)"
-                                filter="url(#glow)"
-                            />
-                            <text
-                                x="32"
-                                y="36"
-                                fontFamily="'Inter',sans-serif"
-                                fontSize="22"
-                                fontWeight="900"
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                                fill="white"
-                            >
-                                Ex.ai
-                            </text>
-                        </svg>
-                    )}
-                </Fab>
-            </Tooltip>
+            {/* FAB BUTTON */}
+            {!open && (
+                <Tooltip title="AI Assistant" placement="left">
+                    <Fab
+                        onClick={() => setOpen(true)}
+                        sx={{
+                            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                            color: '#ffffff',
+                            boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+                            width: 60, height: 60,
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                transform: 'scale(1.05)',
+                            },
+                            transition: 'all 0.3s ease',
+                        }}
+                    >
+                        <AutoAwesome sx={{ fontSize: 28 }} />
+                    </Fab>
+                </Tooltip>
+            )}
         </Box>
     );
 };

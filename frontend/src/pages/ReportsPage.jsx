@@ -246,7 +246,7 @@ const ReportsPage = () => {
           {/* Charts */}
           <Grid container spacing={2} sx={{ mb: 2.5 }}>
             <Grid item xs={12} md={5}>
-              <GlassCard sx={{ height: { xs: 'auto', md: 340 } }}>
+              <GlassCard sx={{ height: { xs: 'auto', md: 340 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>Category Breakdown</Typography>
                 <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
@@ -269,7 +269,7 @@ const ReportsPage = () => {
               </GlassCard>
             </Grid>
             <Grid item xs={12} md={7}>
-              <GlassCard sx={{ height: { xs: 'auto', md: 340 } }}>
+              <GlassCard sx={{ height: { xs: 'auto', md: 340 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>Daily Spending</Typography>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart

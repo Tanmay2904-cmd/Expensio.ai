@@ -105,7 +105,7 @@ const AppContent = () => {
             />
           )}
 
-          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          <Box sx={{ flexGrow: 1, minWidth: 0, overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
             {/* NAVBAR */}
             <AppBar
@@ -260,7 +260,7 @@ const AppContent = () => {
 
             <Toolbar sx={{ minHeight: '60px !important' }} />
 
-            <Box sx={{ p: { xs: 1.5, md: 2.5 } }}>
+            <Box sx={{ p: { xs: 1.5, md: 2.5 }, flexGrow: 1, width: '100%', display: 'flex', flexDirection: 'column' }}>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />

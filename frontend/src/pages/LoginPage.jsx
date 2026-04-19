@@ -38,7 +38,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await login(username, password);
-      setSnackbar({ open: true, message: 'Welcome back! 🎉', severity: 'success' });
+      setSnackbar({ open: true, message: 'Welcome back! Signed in successfully.', severity: 'success' });
       setTimeout(() => navigate('/'), 800);
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');

@@ -157,7 +157,7 @@ const ExpenseTable = ({ expenses, categories, users, onEdit, onDelete }) => {
       </Box>
 
       {/* Desktop Table */}
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+      <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', width: '100%' }}>
         <DataGrid
           rows={filteredExpenses}
           columns={columns}

@@ -60,7 +60,7 @@ const CategoriesPage = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: 'calc(100vh - 100px)' }, pb: 1 }}>
+    <Box sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: 'calc(100vh - 100px)' }, pb: 1 }}>
       {/* Header */}
       <Box sx={{ mb: 2, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5, animation: 'fadeInUp 0.4s ease both' }}>
         <Box>
@@ -69,7 +69,7 @@ const CategoriesPage = () => {
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
             backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            🏷️ Expense Categories
+            Expense Categories
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             {loading ? 'Loading...' : `${categories.length} categor${categories.length !== 1 ? 'ies' : 'y'} configured`}
@@ -120,7 +120,7 @@ const CategoriesPage = () => {
           background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
           backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
-          {editing ? '✏️ Edit Category' : '✨ Add New Category'}
+          {editing ? 'Edit Category' : 'Add New Category'}
         </DialogTitle>
         <DialogContent>
           <CategoryForm initialValues={editing || {}} onSubmit={handleSubmit} />

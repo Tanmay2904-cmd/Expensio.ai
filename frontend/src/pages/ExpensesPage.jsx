@@ -75,11 +75,11 @@ const ExpensesPage = () => {
   const handleDelete = async (id) => { await axiosInstance.delete(`/api/expenses/${id}`); fetchAll(); };
   const handleSubmit = async (form) => {
     const payload = {
-  amount: parseFloat(form.amount),
-  description: form.description,
-  date: form.date,
-  categoryId: form.categoryId,
-};
+      amount: parseFloat(form.amount),
+      description: form.description,
+      date: form.date,
+      categoryId: form.categoryId,
+    };
 
     if (role === 'ADMIN') payload.user = users.find(u => u.id === parseInt(form.userId));
     if (editing) await axiosInstance.put(`/api/expenses/${editing.id}`, { ...payload, id: editing.id });
@@ -89,7 +89,7 @@ const ExpensesPage = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: 'calc(100vh - 100px)' }, pb: 1 }}>
+    <Box sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: 'calc(100vh - 100px)' }, pb: 1 }}>
       {/* Header */}
       <Box sx={{ mb: 2, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5, animation: 'fadeInUp 0.4s ease both' }}>
         <Box>
@@ -98,24 +98,11 @@ const ExpensesPage = () => {
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
             backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            💸 {role === 'ADMIN' ? 'All Expenses' : 'My Expenses'}
+            {role === 'ADMIN' ? 'All Expenses' : 'My Expenses'}
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {loading ? 'Loading...' : `${expenses.length} expense${expenses.length !== 1 ? 's' : ''} tracked`}
-            </Typography>
-            {!loading && (
-              <Chip
-                label={`${expenses.length} total`}
-                size="small"
-                sx={{
-                  background: 'rgba(99,102,241,0.1)',
-                  border: '1px solid rgba(99,102,241,0.2)',
-                  color: '#818cf8', fontWeight: 700, fontSize: '0.7rem',
-                }}
-              />
-            )}
-          </Box>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            {loading ? 'Loading...' : `${expenses.length} expense${expenses.length !== 1 ? 's' : ''} tracked`}
+          </Typography>
         </Box>
         <Button
           variant="contained"
@@ -160,7 +147,7 @@ const ExpensesPage = () => {
           background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
           backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
-          {editing ? '✏️ Edit Expense' : '✨ Add New Expense'}
+          {editing ? 'Edit Expense' : 'Add New Expense'}
         </DialogTitle>
         <DialogContent>
           <ExpenseForm

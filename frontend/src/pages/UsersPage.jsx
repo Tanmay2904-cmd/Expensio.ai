@@ -58,7 +58,7 @@ const UsersPage = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: 'calc(100vh - 100px)' }, pb: 1 }}>
+    <Box sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', height: { xs: 'auto', md: 'calc(100vh - 100px)' }, pb: 1 }}>
       {/* Header */}
       <Box sx={{ mb: 2, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5, animation: 'fadeInUp 0.4s ease both' }}>
         <Box>
@@ -67,7 +67,7 @@ const UsersPage = () => {
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)',
             backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            👥 User Management
+            User Management
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             {loading ? 'Loading...' : `${users.length} user${users.length !== 1 ? 's' : ''} registered`}
@@ -118,7 +118,7 @@ const UsersPage = () => {
           background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
           backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
-          {editing ? '✏️ Edit User' : '✨ Add New User'}
+          {editing ? 'Edit User' : 'Add New User'}
         </DialogTitle>
         <DialogContent>
           <UserForm initialValues={editing || {}} onSubmit={handleSubmit} />
