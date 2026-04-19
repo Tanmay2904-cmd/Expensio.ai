@@ -2,18 +2,17 @@ import axios from 'axios';
 
 const BACKEND_URL = 'https://expensio-ai.onrender.com';
 
-// 🔥 Wake up Render backend on app load (fire-and-forget, no interval yet)
+// Wake up Render backend on app load
 axios.get(`${BACKEND_URL}/actuator/health`).catch(() => { });
 
+// Keep alive interval
 let pingInterval = null;
 
 export const startBackendPing = () => {
-  // Keep backend alive — ping every 14 minutes (only when logged in)
-  if (!pingInterval) {
-    pingInterval = setInterval(() => {
-      axios.get(`${BACKEND_URL}/actuator/health`).catch(() => { });
-    }, 14 * 60 * 1000);
-  }
+  if (pingInterval) return;
+  pingInterval = setInterval(() => {
+    axios.get(`${BACKEND_URL}/actuator/health`).catch(() => { });
+  }, 14 * 60 * 1000);
 };
 
 export const stopBackendPing = () => {
@@ -25,7 +24,7 @@ export const stopBackendPing = () => {
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
-  timeout: 90000, // 90s to allow Render cold-start (~60s)
+  timeout: 60000,
 });
 
 axiosInstance.interceptors.request.use(
