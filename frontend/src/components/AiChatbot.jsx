@@ -60,22 +60,57 @@ const AiChatbot = () => {
                         </Typography>
                     </Box>
 
-                    <Box sx={{ flex: 1, p: 2, overflowY: 'auto' }}>
+                    <Box sx={{ flex: 1, p: 2, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {messages.map((m, i) => (
-                            <Typography key={i}>{m.text}</Typography>
+                            <Box
+                                key={i}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: m.sender === 'User' ? 'flex-end' : 'flex-start',
+                                }}
+                            >
+                                <Box sx={{
+                                    maxWidth: '80%',
+                                    px: 1.5,
+                                    py: 1,
+                                    borderRadius: m.sender === 'User'
+                                        ? '16px 16px 4px 16px'
+                                        : '16px 16px 16px 4px',
+                                    background: m.sender === 'User'
+                                        ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                                        : isDark ? 'rgba(255,255,255,0.07)' : 'rgba(99,102,241,0.07)',
+                                    color: m.sender === 'User'
+                                        ? '#fff'
+                                        : 'text.primary',
+                                    fontSize: '0.875rem',
+                                    lineHeight: 1.5,
+                                    boxShadow: m.sender === 'User'
+                                        ? '0 2px 8px rgba(99,102,241,0.3)'
+                                        : '0 1px 4px rgba(0,0,0,0.08)',
+                                }}>
+                                    {m.text}
+                                </Box>
+                            </Box>
                         ))}
-                        {loading && <CircularProgress size={20} />}
+                        {loading && <CircularProgress size={20} sx={{ alignSelf: 'flex-start', ml: 1 }} />}
                         <div ref={messagesEndRef} />
                     </Box>
 
-                    <Box sx={{ p: 1, display: 'flex' }}>
+                    <Box sx={{ p: 1, display: 'flex', gap: 0.5 }}>
                         <TextField
                             fullWidth
                             size="small"
                             value={input}
                             onChange={e => setInput(e.target.value)}
+                            placeholder="Ask me about your finances..."
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
                         />
-                        <IconButton onClick={handleSend} sx={{ color: 'text.primary' }}>
+                        <IconButton onClick={handleSend} disabled={loading} sx={{ color: 'text.primary' }}>
                             <Send />
                         </IconButton>
                     </Box>
@@ -104,20 +139,20 @@ const AiChatbot = () => {
                         <svg width="60" height="60" viewBox="0 0 64 64">
                             <defs>
                                 <linearGradient id="g" x1="0" y1="0" x2="64" y2="64">
-                                    <stop stopColor="#6366f1"/>
-                                    <stop offset="1" stopColor="#8b5cf6"/>
+                                    <stop stopColor="#6366f1" />
+                                    <stop offset="1" stopColor="#8b5cf6" />
                                 </linearGradient>
                                 <filter id="glow">
                                     <feGaussianBlur stdDeviation="2.5" />
                                 </filter>
                             </defs>
-                            <rect 
+                            <rect
                                 x="2" y="4" width="60" height="56" rx="22"
                                 fill="url(#g)"
                                 filter="url(#glow)"
                             />
-                            <text 
-                                x="32" 
+                            <text
+                                x="32"
                                 y="36"
                                 fontFamily="'Inter',sans-serif"
                                 fontSize="22"

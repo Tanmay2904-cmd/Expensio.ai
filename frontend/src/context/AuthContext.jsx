@@ -1,12 +1,36 @@
 import React, { createContext, useContext, useState } from 'react';
 import axiosInstance from '../utils/axiosConfig';
+import { startBackendPing, stopBackendPing } from '../utils/axiosConfig';
 
 const AuthContext = createContext();
 
+// Decode JWT payload and check expiry without external library
+const isTokenExpired = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true; // treat malformed token as expired
+  }
+};
+
+const getStoredToken = () => {
+  const token = localStorage.getItem('token');
+  if (!token || isTokenExpired(token)) {
+    // Clear stale data immediately
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    return null;
+  }
+  return token;
+};
+
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
-  const [role, setRole] = useState(() => localStorage.getItem('role'));
-  const [user, setUser] = useState(() => localStorage.getItem('user'));
+  const [token, setToken] = useState(() => getStoredToken());
+  const [role, setRole] = useState(() => token ? localStorage.getItem('role') : null);
+  const [user, setUser] = useState(() => token ? localStorage.getItem('user') : null);
 
   const login = async (username, password) => {
     const res = await axiosInstance.post('/api/auth/login', { username, password });
@@ -18,6 +42,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('role', role);
     localStorage.setItem('user', username);
     localStorage.setItem('userId', userId);
+    startBackendPing(); // Start keep-alive ping after successful login
   };
 
   const register = async (username, password, role = 'USER') => {
@@ -40,6 +65,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('user');
+    localStorage.removeItem('userId'); // ← Fixed: was missing before
+    stopBackendPing(); // Stop keep-alive ping after logout
   };
 
   return (

@@ -32,12 +32,13 @@ import ExpensesPage from './pages/ExpensesPage';
 import CategoriesPage from './pages/CategoriesPage';
 import UsersPage from './pages/UsersPage';
 import ReportsPage from './pages/ReportsPage';
+import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Sidebar from './components/Sidebar';
 import AiChatbot from './components/AiChatbot';
 
-const ColorModeContext = createContext({ toggleColorMode: () => {} });
+const ColorModeContext = createContext({ toggleColorMode: () => { } });
 const drawerWidth = 220;
 
 const ProtectedRoute = ({ children, adminOnly }) => {
@@ -267,9 +268,8 @@ const AppContent = () => {
                 <Route path="/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
                 <Route path="/categories" element={<ProtectedRoute><CategoriesPage /></ProtectedRoute>} />
                 <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
-                {role === 'ADMIN' && (
-                  <Route path="/users" element={<ProtectedRoute adminOnly><UsersPage /></ProtectedRoute>} />
-                )}
+                <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="/users" element={<ProtectedRoute adminOnly><UsersPage /></ProtectedRoute>} />
               </Routes>
             </Box>
 
