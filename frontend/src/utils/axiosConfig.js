@@ -1,16 +1,31 @@
 import axios from 'axios';
 
-// Use relative paths to rely on Vite proxy in dev and Firebase rewrites in prod
-const BACKEND_URL = '';
+const BACKEND_URL = 'https://expensio-ai.onrender.com';
 
-// The keep-alive ping is no longer strictly needed for Render since we move to Cloud Run / Firebase.
-// Cloud Run cold starts are minimal and handled via standard autoscaling.
-export const startBackendPing = () => { };
-export const stopBackendPing = () => { };
+// 🔥 Wake up Render backend on app load (fire-and-forget, no interval yet)
+axios.get(`${BACKEND_URL}/actuator/health`).catch(() => { });
+
+let pingInterval = null;
+
+export const startBackendPing = () => {
+  // Keep backend alive — ping every 14 minutes (only when logged in)
+  if (!pingInterval) {
+    pingInterval = setInterval(() => {
+      axios.get(`${BACKEND_URL}/actuator/health`).catch(() => { });
+    }, 14 * 60 * 1000);
+  }
+};
+
+export const stopBackendPing = () => {
+  if (pingInterval) {
+    clearInterval(pingInterval);
+    pingInterval = null;
+  }
+};
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
-  timeout: 30000,
+  timeout: 90000, // 90s to allow Render cold-start (~60s)
 });
 
 axiosInstance.interceptors.request.use(
