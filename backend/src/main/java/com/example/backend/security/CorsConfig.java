@@ -17,7 +17,9 @@ public class CorsConfig {
                                 "http://localhost:3000",
                                 "http://localhost:5173",
                                 "http://localhost:5174",
-                                "https://expensio-ai.netlify.app")
+                                "https://expensio-ai.netlify.app",
+                                "https://expensio-ai-b2a64.web.app",
+                                "https://expensio-ai-b2a64.firebaseapp.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
