@@ -30,7 +30,7 @@ export const stopBackendPing = () => {
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
-  timeout: 60000,
+  timeout: 90000, // ✅ 60s se 90s — Render cold start ke liye
 });
 
 axiosInstance.interceptors.request.use(
@@ -39,6 +39,9 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // ✅ Samsung browser ke liye explicit headers
+    config.headers['Content-Type'] = config.headers['Content-Type'] || 'application/json';
+    config.headers['Accept'] = 'application/json';
     return config;
   },
   (error) => Promise.reject(error)
@@ -46,7 +49,12 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'success' in response.data &&
+      'data' in response.data
+    ) {
       return {
         ...response,
         data: response.data.data,
@@ -55,12 +63,19 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    // ✅ Network error handle karo — Samsung/mobile pe timeout aata hai
+    if (!error.response) {
+      error.message = 'Network error — please check your connection or try again.';
+      return Promise.reject(error);
+    }
+
     const data = error.response?.data;
     if (data?.message) {
       error.message = data.message;
     } else if (data?.error) {
       error.message = data.error;
     }
+
     if (error.response?.status === 401 || error.response?.status === 403) {
       localStorage.removeItem('token');
       localStorage.removeItem('role');
@@ -73,6 +88,7 @@ axiosInstance.interceptors.response.use(
       }
       return Promise.reject(error);
     }
+
     return Promise.reject(error);
   }
 );
