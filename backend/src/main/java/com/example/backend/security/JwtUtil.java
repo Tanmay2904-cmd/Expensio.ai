@@ -3,8 +3,6 @@ package com.example.backend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.security.Key;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtUtil {
@@ -21,8 +21,9 @@ public class JwtUtil {
     private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
 
     private Key getSigningKey() {
-        byte[] keyBytes = SECRET_KEY.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+        // ✅ FIXED: use getBytes instead of BASE64 decode
+        byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
     public String extractUsername(String token) {
@@ -74,4 +75,4 @@ public class JwtUtil {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
-} 
+}

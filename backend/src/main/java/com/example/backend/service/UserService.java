@@ -5,10 +5,10 @@ import com.example.backend.entity.User;
 import com.example.backend.exception.DuplicateResourceException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -24,17 +24,14 @@ public class UserService {
     }
 
     public User registerUser(RegisterDTO registerDTO) {
-        // Check if user already exists
         if (userRepository.findByName(registerDTO.getName()).isPresent()) {
             throw new DuplicateResourceException("Username already exists");
         }
-
         User user = new User();
         user.setName(registerDTO.getName());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setRole(registerDTO.getRole() != null ? registerDTO.getRole() : "USER");
-
-        logger.info("Registering new user: {}", registerDTO.getName());
+        logger.info("Registering user: {} with role: {}", registerDTO.getName(), user.getRole());
         return userRepository.save(user);
     }
 
@@ -45,7 +42,7 @@ public class UserService {
 
     public User getUserByName(String name) {
         return userRepository.findByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with name: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + name));
     }
 
     public List<User> getAllUsers() {
@@ -74,8 +71,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // ✅ New: re-encode plain text admin password
+    public User resetAdminPassword(String adminName, String newPassword) {
+        User user = getUserByName(adminName);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        logger.info("Password re-encoded for admin: {}", adminName);
+        return userRepository.save(user);
+    }
+
     public void deleteUser(String id) {
-        User user = getUserById(id); // Verify user exists
+        getUserById(id);
         userRepository.deleteById(id);
         logger.info("Deleted user: {}", id);
     }
