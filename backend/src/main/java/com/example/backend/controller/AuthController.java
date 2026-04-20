@@ -84,18 +84,6 @@ public class AuthController {
         }
     }
 
-    // ⚠️ TEMPORARY — Admin password fix karne ke liye, deploy ke baad delete karo
-    @PostMapping("/fix-admin")
-    public ResponseEntity<ApiResponse<String>> fixAdmin(@RequestBody Map<String, String> body) {
-        String secret = body.get("secret");
-        if (!"expensio-fix-2024".equals(secret)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(ApiResponse.error("Forbidden"));
-        }
-        String adminName = body.get("username");
-        String newPassword = body.get("password");
-        userService.resetAdminPassword(adminName, newPassword);
-        logger.info("Admin password reset for: {}", adminName);
-        return ResponseEntity.ok(ApiResponse.success("Admin password fixed successfully"));
-    }
+    
+    
 }
