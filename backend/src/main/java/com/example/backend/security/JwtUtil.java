@@ -21,7 +21,7 @@ public class JwtUtil {
     private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = SECRET_KEY.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
