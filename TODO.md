@@ -1,1 +1,42 @@
-# AI Chatbot Button Logo Change (Completed ✅)\n\n- [x] Step 1: Custom SVG icon design for Ex.ai button (inline SVG used)\n- [x] Step 2: Edit AiChatbot.jsx for FAB and header icons\n- [x] Step 3: Test changes (run `cd frontend && npm run dev`)\n- [x] Step 4: Complete\n\nButton अब "Ex.ai" gradient oval icon के साथ ready है!
+# Authentication Fix Tracker - UPDATED FOR PROD 401
+
+✅ JWT fallback secret added to application.properties
+
+## Test Steps:
+
+### Backend Local:
+```cmd
+# Generate key (32+ bytes)
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+
+# Run
+set JWT_SECRET=your_generated_key_here
+cd backend
+mvn spring-boot:run
+```
+
+### Auth Tests (localhost:8080):
+```cmd
+curl -X POST http://localhost:8080/api/auth/register ^
+  -H "Content-Type: application/json" ^
+  -d "{\"name\":\"test\",\"password\":\"test123\",\"role\":\"USER\"}"
+
+curl -X POST http://localhost:8080/api/auth/login ^
+  -H "Content-Type: application/json" ^
+  -d "{\"username\":\"test\",\"password\":\"test123\"}"
+```
+
+### Frontend Local:
+```cmd
+cd frontend
+npm run dev
+# Auto-uses localhost:8080 (axiosConfig updated)
+```
+
+### Production Fix (Render):
+1. Render Dashboard → expensio-ai → Environment
+2. Add `JWT_SECRET` = `openssl rand -base64 32`
+3. Redeploy
+4. Test: curl https://expensio-ai.onrender.com/api/auth/login -d...
+
+**Next**: Run local tests, then deploy JWT_SECRET to Render.

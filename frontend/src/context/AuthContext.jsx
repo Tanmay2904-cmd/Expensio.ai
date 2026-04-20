@@ -34,7 +34,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     const res = await axiosInstance.post('/api/auth/login', { username, password });
-    const { token, role, userId } = res.data; // Data is already unwrapped by interceptor
+    const { token, role, username, userId } = res.data;
+    setUser(username); // Data is already unwrapped by interceptor
     setToken(token);
     setRole(role);
     setUser(username);

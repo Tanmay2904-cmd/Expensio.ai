@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const BACKEND_URL = 'https://expensio-ai.onrender.com';
+const getBackendURL = () => {
+  if (typeof window === 'undefined') return 'http://localhost:8080';
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:8080';
+  return 'https://expensio-ai.onrender.com';
+};
+const BACKEND_URL = getBackendURL();
 
 // Wake up Render backend on app load
 axios.get(`${BACKEND_URL}/actuator/health`).catch(() => { });

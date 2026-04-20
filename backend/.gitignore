@@ -44,7 +44,8 @@ application-*.properties
 .env
 .env.local
 src/main/resources/application.properties
+src/main/resources/*.json
 .vscode/launch.json
 expensiofirebase.json
 serviceAccountKey.json
-expensioFirebaseKey.json
+expensioFirebase*.json
