@@ -14,11 +14,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/debug")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"}, allowCredentials = "true")
 public class DebugController {
+
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -29,44 +29,42 @@ public class DebugController {
     }
 
     @PostMapping("/test-password")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> testPassword(@RequestBody Map<String, String> request) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> testPassword(
+            @RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");
-        
+
         var user = userRepository.findByName(username);
         if (user.isEmpty()) {
-            return ResponseEntity.ok(ApiResponse.success("User not found", Map.of("found", false)));
+            return ResponseEntity.ok(ApiResponse.success("User not found",
+                    Map.of("found", false)));
         }
-        
+
         User u = user.get();
         boolean matches = passwordEncoder.matches(password, u.getPassword());
-        
+        String hashPreview = u.getPassword().substring(0,
+                Math.min(20, u.getPassword().length())) + "...";
+
         return ResponseEntity.ok(ApiResponse.success("Password test complete", Map.of(
-            "username", u.getName(),
-            "storedHash", u.getPassword().substring(0, Math.min(20, u.getPassword().length())) + "...",
-            "providedPassword", password,
-            "matches", matches
-        )));
+                "username", u.getName(),
+                "storedHash", hashPreview,
+                "providedPassword", password,
+                "matches", matches)));
     }
 
-    /**
-     * Debug current authentication status
-     */
-@GetMapping("/auth")
+    @GetMapping("/auth")
     public ResponseEntity<ApiResponse<Map<String, Object>>> debugAuth() {
         try {
             String username = SecurityUtil.getCurrentUsername();
             boolean isAdmin = SecurityUtil.isAdmin();
             return ResponseEntity.ok(ApiResponse.success("Auth status", Map.of(
-                "authenticated", username != null,
-                "username", username,
-                "isAdmin", isAdmin
-            )));
+                    "authenticated", username != null,
+                    "username", username != null ? username : "none",
+                    "isAdmin", isAdmin)));
         } catch (Exception e) {
             return ResponseEntity.ok(ApiResponse.success("Not authenticated", Map.of(
-                "authenticated", false,
-                "error", e.getMessage()
-            )));
+                    "authenticated", false,
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown")));
         }
     }
 
@@ -74,4 +72,4 @@ public class DebugController {
     public String getAdminHash() {
         return passwordEncoder.encode("admin123");
     }
-
+}

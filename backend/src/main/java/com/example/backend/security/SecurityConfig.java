@@ -23,6 +23,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
@@ -48,13 +49,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "https://expensio-ai.netlify.app"
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://expensio-ai.netlify.app",
+                "https://expensio-ai-b2a64.web.app",        // ✅ Firebase hosting
+                "https://expensio-ai-b2a64.firebaseapp.com" // ✅ Firebase alt domain
         ));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -67,6 +73,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/api/debug/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
