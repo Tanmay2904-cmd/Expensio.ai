@@ -25,17 +25,13 @@ const GlassCard = ({ children, sx = {}, glowColor = 'rgba(99,102,241,0.15)' }) =
     <Paper elevation={0} sx={{
       borderRadius: '20px',
       p: { xs: 2, md: 2.5 },
-      background: isDark
-        ? 'rgba(13, 13, 36, 0.7)'
-        : 'rgba(255, 255, 255, 0.95)',
+      background: isDark ? 'rgba(13, 13, 36, 0.7)' : 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      border: isDark
-        ? '1px solid rgba(99,102,241,0.2)'
-        : '1px solid rgba(99,102,241,0.1)',
+      border: isDark ? '1px solid rgba(99,102,241,0.2)' : '1px solid rgba(99,102,241,0.1)',
       boxShadow: isDark
-        ? `0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)`
-        : `0 4px 24px rgba(99,102,241,0.08), inset 0 1px 0 rgba(255,255,255,0.9)`,
+        ? '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)'
+        : '0 4px 24px rgba(99,102,241,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
       transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1)',
       '&:hover': {
         transform: 'translateY(-3px)',
@@ -54,7 +50,7 @@ const StatCard = ({ icon, label, value, color, subtitle, delay = 0 }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   return (
-    <GlassCard glowColor={`${color}40`} sx={{ animation: `fadeInUp 0.5s ease ${delay}ms both`, height: '100%' }}>
+    <GlassCard glowColor={`${color}40`} sx={{ height: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
         <Box sx={{
           width: 48, height: 48,
@@ -76,7 +72,7 @@ const StatCard = ({ icon, label, value, color, subtitle, delay = 0 }) => {
           </Typography>
           <Typography sx={{
             fontWeight: 800,
-            fontSize: { xs: '1.35rem', md: '1.6rem' },
+            fontSize: { xs: '1.1rem', md: '1.4rem' },
             background: `linear-gradient(135deg, ${color}, ${color}bb)`,
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
@@ -89,7 +85,7 @@ const StatCard = ({ icon, label, value, color, subtitle, delay = 0 }) => {
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.4, display: 'block', fontSize: '0.72rem' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.4, display: 'block', fontSize: '0.68rem' }}>
               {subtitle}
             </Typography>
           )}
@@ -123,6 +119,31 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+// ✅ Custom legend jo mobile pe wrap kare
+const CustomLegend = ({ data, colors }) => (
+  <Box sx={{
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '6px 12px',
+    justifyContent: 'center',
+    mt: 1,
+    px: 1,
+  }}>
+    {data.map((entry, index) => (
+      <Box key={entry.name} sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+        <Box sx={{
+          width: 8, height: 8, borderRadius: '50%',
+          background: colors[index % colors.length],
+          flexShrink: 0,
+        }} />
+        <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', whiteSpace: 'nowrap' }}>
+          {entry.name}
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+);
+
 const DashboardPage = () => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -131,13 +152,10 @@ const DashboardPage = () => {
   const [pieData, setPieData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Extra stats
   const totalSpent = pieData.reduce((sum, item) => sum + item.value, 0);
   const topCategory = pieData.length > 0 ? pieData.reduce((a, b) => a.value > b.value ? a : b) : null;
   const maxMonthlySpend = barData.reduce((max, d) => d.total > max ? d.total : max, 0);
   const bestMonth = barData.find(d => d.total === maxMonthlySpend);
-  const activeDays = barData.filter(d => d.total > 0).length;
-  const avgDaily = activeDays > 0 ? totalSpent / activeDays : 0;
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -207,13 +225,13 @@ const DashboardPage = () => {
         </Typography>
       </Box>
 
-      {/* Stat Cards - 2 columns on mobile, 4 on desktop */}
-      <Grid container spacing={2} sx={{ mb: 3, alignItems: 'stretch' }}>
+      {/* Stat Cards */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { icon: <AccountBalanceWalletIcon />, label: 'Total Spent', value: `₹${totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, color: '#6366f1', subtitle: 'All categories combined', delay: 0 },
-          { icon: <CategoryIcon />, label: 'Top Category', value: topCategory ? topCategory.name : '—', color: '#8b5cf6', subtitle: topCategory ? `₹${topCategory.value.toFixed(2)} spent` : 'No data yet', delay: 100 },
-          { icon: <TrendingUpIcon />, label: 'Peak Month', value: bestMonth && bestMonth.total > 0 ? bestMonth.month : '—', color: '#06b6d4', subtitle: bestMonth && bestMonth.total > 0 ? `₹${bestMonth.total.toFixed(2)} spent` : 'No spending yet', delay: 200 },
-          { icon: <CalendarMonthIcon />, label: 'Active Categories', value: pieData.length, color: '#10b981', subtitle: 'Tracked expense types', delay: 300 },
+          { icon: <AccountBalanceWalletIcon />, label: 'Total Spent', value: `₹${totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, color: '#6366f1', subtitle: 'All categories combined' },
+          { icon: <CategoryIcon />, label: 'Top Category', value: topCategory ? topCategory.name : '—', color: '#8b5cf6', subtitle: topCategory ? `₹${topCategory.value.toFixed(2)} spent` : 'No data yet' },
+          { icon: <TrendingUpIcon />, label: 'Peak Month', value: bestMonth && bestMonth.total > 0 ? bestMonth.month : '—', color: '#06b6d4', subtitle: bestMonth && bestMonth.total > 0 ? `₹${bestMonth.total.toFixed(2)} spent` : 'No spending yet' },
+          { icon: <CalendarMonthIcon />, label: 'Active Categories', value: pieData.length, color: '#10b981', subtitle: 'Tracked expense types' },
         ].map((stat, i) => (
           <Grid item xs={6} md={3} key={i}>
             {loading
@@ -228,7 +246,7 @@ const DashboardPage = () => {
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
         {/* Area Chart */}
         <Grid item xs={12} md={7}>
-          <GlassCard sx={{ height: { xs: 300, md: 360 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
+          <GlassCard sx={{ width: '100%', minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
               <ShowChartIcon sx={{ fontSize: 18, color: '#6366f1' }} />
               <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' } }}>
@@ -263,9 +281,9 @@ const DashboardPage = () => {
           </GlassCard>
         </Grid>
 
-        {/* Pie Chart */}
+        {/* ✅ Pie Chart - height auto, overflow visible, custom legend */}
         <Grid item xs={12} md={5}>
-          <GlassCard sx={{ height: { xs: 360, md: 360 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
+          <GlassCard sx={{ width: '100%', minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
               <DonutLargeIcon sx={{ fontSize: 18, color: '#8b5cf6' }} />
               <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' } }}>
@@ -279,22 +297,21 @@ const DashboardPage = () => {
               ? <Skeleton variant="circular" width={160} height={160} sx={{ mx: 'auto', mt: 3 }} />
               : pieData.length > 0
                 ? (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <PieChart>
-                      <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="42%"
-                        outerRadius={85} innerRadius={45} paddingAngle={3} isAnimationActive>
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none"
-                            style={{ filter: `drop-shadow(0 0 5px ${COLORS[index % COLORS.length]}70)` }}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend iconType="circle" iconSize={7}
-                        formatter={(value) => <span style={{ fontSize: '0.75rem', color: theme.palette.text.secondary }}>{value}</span>}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <>
+                    <ResponsiveContainer width="100%" height={220}>
+                      <PieChart>
+                        <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                          outerRadius={85} innerRadius={45} paddingAngle={3}>
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {/* ✅ Custom legend — neeche wrap hoga, cut nahi hoga */}
+                    <CustomLegend data={pieData} colors={COLORS} />
+                  </>
                 )
                 : (
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 220, gap: 1.5 }}>
