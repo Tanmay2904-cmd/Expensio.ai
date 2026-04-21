@@ -208,7 +208,7 @@ const DashboardPage = () => {
       </Box>
 
       {/* Stat Cards - 2 columns on mobile, 4 on desktop */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ mb: 3, alignItems: 'stretch' }}>
         {[
           { icon: <AccountBalanceWalletIcon />, label: 'Total Spent', value: `₹${totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, color: '#6366f1', subtitle: 'All categories combined', delay: 0 },
           { icon: <CategoryIcon />, label: 'Top Category', value: topCategory ? topCategory.name : '—', color: '#8b5cf6', subtitle: topCategory ? `₹${topCategory.value.toFixed(2)} spent` : 'No data yet', delay: 100 },
@@ -265,7 +265,7 @@ const DashboardPage = () => {
 
         {/* Pie Chart */}
         <Grid item xs={12} md={5}>
-          <GlassCard sx={{ height: { xs: 300, md: 360 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
+          <GlassCard sx={{ height: { xs: 360, md: 360 }, width: '100%', minWidth: 0, overflow: 'hidden' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
               <DonutLargeIcon sx={{ fontSize: 18, color: '#8b5cf6' }} />
               <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.95rem', md: '1.05rem' } }}>
@@ -291,7 +291,7 @@ const DashboardPage = () => {
                       </Pie>
                       <Tooltip content={<CustomTooltip />} />
                       <Legend iconType="circle" iconSize={7}
-                        formatter={(value) => <span style={{ fontSize: '0.72rem', color: theme.palette.text.secondary }}>{value}</span>}
+                        formatter={(value) => <span style={{ fontSize: '0.75rem', color: theme.palette.text.secondary }}>{value}</span>}
                       />
                     </PieChart>
                   </ResponsiveContainer>
