@@ -1,0 +1,13 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The Expensio application uses the Firebase Admin SDK from the 
+    // Spring Boot backend, which bypasses these security rules entirely.
+    // Therefore, it is safest to completely deny all direct client access
+    // from the internet to protect the database from unauthorized access.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
