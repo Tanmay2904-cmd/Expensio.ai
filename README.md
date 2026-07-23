@@ -166,3 +166,21 @@ npm run build
 
 ## License
 MIT
+
+
+---
+
+## ?? QA & Testing Documentation
+
+This project includes structured QA documentation to demonstrate real-world testing practices.
+
+| Document | Description |
+|---|---|
+| [?? Test Cases](./qa-artifacts/Expensio_TestCases.csv) | 30+ manual test cases: Login, RBAC, JWT Auth, Expense CRUD, Regression, Security |
+| [?? Bug Reports](./qa-artifacts/Bug_Reports.csv) | Defects logged with Severity, Priority, Steps-to-Reproduce & Resolution Status |
+
+**Testing Coverage:**
+- ? 30+ manual test cases (Functional, Security, Edge Cases, Regression)
+- ? 12+ REST API endpoints validated via Postman (JWT, CRUD, RBAC)
+- ? 6 functional defects identified, documented & verified after fix
+- ? End-to-end testing across 3 user roles: User, Admin, Super Admin

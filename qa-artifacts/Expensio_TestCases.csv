@@ -1,0 +1,21 @@
+TC_ID,Module,Test Scenario,Test Type,Test Steps,Expected Result,Actual Result,Status,Priority,Severity
+TC001,Login,Valid user login,Positive,"1. Navigate to login page 2. Enter valid email 3. Enter correct password 4. Click Login",User redirected to dashboard with correct role,As Expected,Pass,High,Critical
+TC002,Login,Login with invalid password,Negative,"1. Enter valid email 2. Enter incorrect password 3. Click Login",Error message: 'Invalid credentials' displayed,As Expected,Pass,High,Major
+TC003,Login,Login with empty fields,Negative,"1. Leave email and password empty 2. Click Login",Validation error shown for both fields,As Expected,Pass,Medium,Minor
+TC004,Login,Login with invalid email format,Negative,"1. Enter 'abc' in email field 2. Enter any password 3. Click Login",Email format validation error shown,As Expected,Pass,Medium,Minor
+TC005,RBAC - Admin,Admin can view all users,Positive,"1. Login as Admin 2. Navigate to Users section",Full user list with all details visible,As Expected,Pass,High,Critical
+TC006,RBAC - Admin,Admin can add new expense category,Positive,"1. Login as Admin 2. Go to Categories 3. Click Add 4. Fill details 5. Save",New category added and visible in list,As Expected,Pass,High,Major
+TC007,RBAC - User,User cannot access admin panel,Security,"1. Login as User 2. Manually enter /admin URL in browser",Redirected to home or Access Denied page,As Expected,Pass,High,Critical
+TC008,RBAC - User,User can only see own expenses,Security,"1. Login as User A 2. View expense list",Only User A's expenses visible; no other user's data,As Expected,Pass,High,Critical
+TC009,Expense,Add valid expense,Positive,"1. Login as User 2. Click Add Expense 3. Enter amount, category, date, note 4. Submit",Expense appears in list with correct data,As Expected,Pass,High,Major
+TC010,Expense,Add expense with negative amount,Negative,"1. Login as User 2. Click Add Expense 3. Enter -500 as amount 4. Submit",Validation error: Amount must be positive,As Expected,Pass,Medium,Minor
+TC011,Expense,Edit existing expense,Positive,"1. Login as User 2. Click on an expense 3. Click Edit 4. Change amount 5. Save",Expense updated with new amount in the list,As Expected,Pass,High,Major
+TC012,Expense,Delete an expense,Positive,"1. Login as User 2. Click on an expense 3. Click Delete 4. Confirm",Expense removed from the list permanently,As Expected,Pass,High,Major
+TC013,Expense,Add expense with missing required field,Negative,"1. Login as User 2. Click Add Expense 3. Leave category empty 4. Submit",Validation error for required field shown,As Expected,Pass,Medium,Minor
+TC014,AI Chatbot,Ask expense-related question,Positive,"1. Login 2. Open chatbot 3. Type 'Show my top expenses this month'",Chatbot responds with relevant data,As Expected,Pass,Medium,Major
+TC015,AI Chatbot,Ask out-of-scope question,Negative,"1. Login 2. Open chatbot 3. Type 'What is the capital of France?'",Chatbot politely responds it only handles expense queries,As Expected,Pass,Low,Minor
+TC016,Auth - JWT,Access protected API without token,Security,"1. Open Postman 2. GET /api/expenses without Authorization header",HTTP 401 Unauthorized returned,As Expected,Pass,High,Critical
+TC017,Auth - JWT,Access API with expired token,Security,"1. Use an expired JWT token 2. GET /api/expenses",HTTP 401 with 'Token expired' message,As Expected,Pass,High,Critical
+TC018,Auth - JWT,Access API with valid token,Positive,"1. Login and copy token 2. Add Bearer token to Postman 3. GET /api/expenses",HTTP 200 with user's expense data,As Expected,Pass,High,Critical
+TC019,Regression,Full login-to-expense-add flow,End-to-End,"1. Open app 2. Login 3. Add expense 4. Verify in list 5. Logout",All steps work without errors,As Expected,Pass,High,Critical
+TC020,Smoke,Application loads successfully,Smoke,"1. Navigate to app URL 2. Observe page load",Login page loads within 3 seconds with no console errors,As Expected,Pass,High,Critical
